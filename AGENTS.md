@@ -7,6 +7,8 @@ readable, and runnable by one indie developer.
 
 - Prefer markdown files and tiny scripts over services, databases, or custom UI.
 - Keep one active task owner in `TASK.md` and `.ai/state/active-task.json`.
+- Use `.ai/protocol.md` as the shared protocol for agent integrations.
+- Use `scripts/agent-ops-tool.py` for JSON state when an agent needs a tool call.
 - Do not let multiple agents edit the same concern at the same time.
 - Capture decisions in `DECISIONS.md` before building machinery around them.
 - Put speculative ideas in `.ai/parking-lot.md`, not in active workflow docs.
@@ -24,9 +26,9 @@ readable, and runnable by one indie developer.
 
   ```bash
   bash -n scripts/*.sh
+  python3 -m py_compile scripts/agent-ops-tool.py
   ./scripts/task-status.sh
   ```
 
 - For workflow changes, dry-run the relevant script or checklist and update the
   workflow file with the result.
-

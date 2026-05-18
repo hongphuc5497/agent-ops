@@ -1,10 +1,8 @@
 .DS_Store
 
 # Machine-local active task lock.
-.ai/state/*
-!.ai/state/.gitkeep
+.ai/state/active-task.json
 
 # Python cache from local script execution.
 __pycache__/
 *.pyc
-

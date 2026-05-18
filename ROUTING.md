@@ -12,6 +12,18 @@
 | GitHub Actions | Verification and remote signal | No | CI, regression gates, release checks | Workflow orchestration logic |
 | Local LLMs | Cheap/offline draft worker | No by default | Summaries, first-pass classification, private/offline rough work | Final authority, risky code edits, security-sensitive review |
 
+## Agent Ops Protocol
+
+When `.ai/protocol.md` exists, agents should use Agent Ops before editing:
+
+```bash
+scripts/agent-ops-tool.py status
+scripts/agent-ops-tool.py route "task description"
+scripts/agent-ops-tool.py claim "path/or/glob"
+```
+
+The protocol is the product surface. The CLI and scripts are adapters.
+
 ## Brain Decision
 
 Codex is the brain for v1.
@@ -43,14 +55,15 @@ Examples:
 ## Routing Rules
 
 1. If the task changes files, assign exactly one active owner.
-2. If the task is codebase discovery, ask Augment first, then inspect files.
-3. If the task is implementation, Codex owns by default.
-4. If a task can be split, split by file ownership, not by vague topic.
-5. If review is needed, OpenClaw reviews the plan/product angle and Codex or CI
+2. If the task changes files, claim the file set before editing.
+3. If the task is codebase discovery, ask Augment first, then inspect files.
+4. If the task is implementation, Codex owns by default.
+5. If a task can be split, split by file ownership, not by vague topic.
+6. If review is needed, OpenClaw reviews the plan/product angle and Codex or CI
    reviews code behavior.
-6. If the work is repetitive and scheduled, Hermes can run it after the manual
+7. If the work is repetitive and scheduled, Hermes can run it after the manual
    workflow has succeeded at least twice.
-7. If the task is speculative, it goes to `.ai/experiments/README.md` first.
+8. If the task is speculative, it goes to `.ai/experiments/README.md` first.
 
 ## Delegation Rules
 
@@ -96,4 +109,3 @@ Return with: changed files, verification output, risks
 
 If two agents need the same file, stop and serialize the work. The current
 owner finishes or parks first. No merge games for solo indie workflow.
-

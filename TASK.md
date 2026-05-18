@@ -11,18 +11,8 @@ No active task.
 
 ## Rules
 
-- Start exactly one task before implementation:
-
-  ```bash
-  ./scripts/task-start.sh "task title" Codex
-  ```
-
+- Start exactly one task before implementation.
 - Keep the owner responsible for edits, verification, and final summary.
 - Advisors can comment, review, or research, but they do not edit the active
-  concern unless ownership is transferred in this file.
-- Finish or park the active task before starting another:
-
-  ```bash
-  ./scripts/task-finish.sh done
-  ./scripts/task-finish.sh parked
-  ```
+  concern unless ownership is transferred.
+- Finish or park the active task before starting another.

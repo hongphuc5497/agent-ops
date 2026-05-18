@@ -9,7 +9,7 @@ Non-goal: build another generic agent framework.
 ### V1 Architecture
 
 ```text
-TASK.md + ROUTING.md + DECISIONS.md
+TASK.md + ROUTING.md + DECISIONS.md + .ai/protocol.md
         |
         v
 Codex = brain + operator + default implementer
@@ -41,6 +41,27 @@ Memory is repo markdown plus Codex durable memory. Hermes state is useful for
 status checks but not canonical memory.
 
 Notifications are Hermes locally and GitHub Actions remotely.
+
+### Integration-First Shape
+
+```text
+Agent Ops Protocol
+  - task state
+  - file claims
+  - routing rules
+  - handoff records
+  - verification gates
+
+Integration Surfaces
+  - AGENTS.md / instruction templates
+  - JSON tool bridge
+  - future MCP server
+  - GitHub Action
+  - optional dashboard
+```
+
+The CLI exists for humans and scripts, but the product surface is the protocol
+agents can use from inside their normal workflow.
 
 ### Why Not More Infra
 
@@ -101,6 +122,13 @@ agent-ops/
     parking-lot.md
     state/
       active-task.json
+      file-claims.json
+      handoffs.jsonl
+    schema/
+      task.schema.json
+      file-claims.schema.json
+      handoff.schema.json
+    protocol.md
     tasks/
       archive/
     workflows/
@@ -130,11 +158,18 @@ agent-ops/
       project-score.md
   scripts/
     agent-ops-check.sh
+    agent-ops-tool.py
+    install-integration.sh
     task-start.sh
     task-status.sh
     task-finish.sh
     weekly-review.sh
 ```
+
+### Protocol Contents
+
+`.ai/protocol.md` defines the contract every agent follows: check status, claim
+files, avoid overlapping ownership, log handoffs, verify before finishing.
 
 ### TASK.md Contents
 
@@ -323,6 +358,7 @@ Day 1:
 - Seed this repo.
 - Use it for one real task.
 - Fix obvious friction.
+- Add protocol, schemas, integration templates, and JSON bridge.
 
 Day 2:
 
@@ -334,6 +370,7 @@ Day 3:
 
 - Add a GitHub Action that checks `TASK.md`, `ROUTING.md`, and `DECISIONS.md`
   exist and that no active task is stale.
+- Add a future MCP wrapper only if the JSON bridge proves useful.
 
 Day 4:
 
@@ -384,9 +421,9 @@ Day 14:
 
 ### Build First
 
-1. Repo template.
-2. Task lock scripts.
-3. Routing docs.
+1. Protocol and schemas.
+2. JSON tool bridge for agents.
+3. Integration templates.
 4. GitHub Action check.
 5. Dogfood case study.
 
@@ -399,6 +436,7 @@ Day 14:
 - Agent marketplace.
 - Slack/Discord bot.
 - Browser UI.
+- Full MCP server before the bridge is proven.
 
 ### Technical Priorities
 

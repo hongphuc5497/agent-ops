@@ -8,6 +8,19 @@ required_files=(
   "ROUTING.md"
   "DECISIONS.md"
   ".ai/ARCHITECTURE.md"
+  ".ai/protocol.md"
+  ".ai/schema/task.schema.json"
+  ".ai/schema/file-claims.schema.json"
+  ".ai/schema/handoff.schema.json"
+  ".ai/state/file-claims.json"
+  ".ai/state/handoffs.jsonl"
+  "integrations/README.md"
+  "integrations/codex/AGENTS.template.md"
+  "integrations/opencode/instructions.md"
+  "integrations/augment/discovery-guide.md"
+  "integrations/openclaw/review.md"
+  "integrations/hermes/monitor.md"
+  "integrations/mcp/README.md"
   ".ai/workflows/daily.md"
   ".ai/workflows/feature.md"
   ".ai/workflows/debugging.md"
@@ -49,5 +62,6 @@ PY
 fi
 
 bash -n scripts/*.sh
+python3 -m py_compile scripts/agent-ops-tool.py
+python3 scripts/agent-ops-tool.py check >/dev/null
 echo "agent-ops check passed"
-
