@@ -28,6 +28,7 @@ Install:
 | Integration | Output |
 | --- | --- |
 | `codex` | Appends Agent Ops rules to `AGENTS.md` |
+| `claude` | Appends Agent Ops rules to `CLAUDE.md` |
 | `opencode` | Writes `.ai/integrations/opencode-instructions.md` |
 | `augment` | Writes `.ai/integrations/augment-discovery.md` |
 | `openclaw` | Writes `.ai/integrations/openclaw-review.md` |

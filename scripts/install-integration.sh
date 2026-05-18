@@ -5,7 +5,7 @@ integration="${1:-}"
 mode="${2:-}"
 
 if [[ -z "$integration" ]]; then
-  echo "usage: $0 <codex|opencode|augment|openclaw|hermes> [--dry-run]" >&2
+  echo "usage: $0 <codex|opencode|augment|openclaw|hermes|claude> [--dry-run]" >&2
   exit 2
 fi
 
@@ -62,6 +62,24 @@ case "$integration" in
     ;;
   hermes)
     copy_file "integrations/hermes/monitor.md" ".ai/integrations/hermes-monitor.md"
+    ;;
+  claude)
+    src="integrations/claude/CLAUDE.template.md"
+    if [[ ! -f "$src" ]]; then
+      echo "missing $src" >&2
+      exit 1
+    fi
+    if [[ "$dry_run" -eq 1 ]]; then
+      echo "would append Agent Ops Claude rules to CLAUDE.md"
+    elif rg -q "Agent Ops Rules for Claude" CLAUDE.md; then
+      echo "CLAUDE.md already contains Agent Ops Claude rules"
+    else
+      {
+        printf "\\n"
+        cat "$src"
+      } >> CLAUDE.md
+      echo "updated CLAUDE.md"
+    fi
     ;;
   *)
     echo "unknown integration: $integration" >&2

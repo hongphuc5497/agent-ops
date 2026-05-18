@@ -62,6 +62,7 @@ copy_files=(
   ".ai/templates/project-score.md"
   "integrations/README.md"
   "integrations/codex/AGENTS.template.md"
+  "integrations/claude/CLAUDE.template.md"
   "integrations/opencode/instructions.md"
   "integrations/augment/discovery-guide.md"
   "integrations/openclaw/review.md"
