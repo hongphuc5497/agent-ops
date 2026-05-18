@@ -380,6 +380,11 @@ def command_check(_: argparse.Namespace) -> None:
         "scripts/install-integration.sh",
         "scripts/init-repo.sh",
         "scripts/agent-ops-check.sh",
+        "integrations/codex/AGENTS.template.md",
+        "integrations/claude/CLAUDE.template.md",
+        ".github/workflows/agent-ops-check.yml",
+        ".github/workflows/notify-failure.yml",
+        ".github/workflows/stale-task-monitor.yml",
     ]
     missing = [path for path in required if not (ROOT / path).exists()]
     invalid_json: list[str] = []
