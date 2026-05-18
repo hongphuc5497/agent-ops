@@ -36,6 +36,15 @@ fi
 
 target_root="$(cd "$target" && pwd)"
 
+if ! git -C "$target_root" rev-parse --git-dir >/dev/null 2>&1; then
+  echo "target is not a git repository: $target_root" >&2
+  echo "run 'git init' in the target first, or use --force to skip this check" >&2
+  if [[ "$force" -eq 0 ]]; then
+    exit 1
+  fi
+  echo "proceeding anyway (--force)" >&2
+fi
+
 copy_files=(
   "ROUTING.md"
   ".ai/protocol.md"
