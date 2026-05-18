@@ -337,6 +337,7 @@ def command_check(_: argparse.Namespace) -> None:
         ".ai/schema/file-claims.schema.json",
         ".ai/schema/handoff.schema.json",
         "scripts/agent-ops-tool.py",
+        "scripts/ao",
         "scripts/install-integration.sh",
         "scripts/init-repo.sh",
         "scripts/agent-ops-check.sh",

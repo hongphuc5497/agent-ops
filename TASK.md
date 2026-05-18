@@ -1,18 +1,20 @@
 # Active Task
 
-Status: none
-Owner: none
-Started: none
-Task file: none
+Status: active
+Owner: Hermes
+Started: 2026-05-18T16:47:13.164142+00:00
+Task file: .ai/tasks/20260518-164713-consolidate-tool-surfaces-under-ao-bridge.md
+Repo: /Users/hongphuc/repos/agent-ops
+Workflow: .ai/workflows/feature.md
+Verification: bash -n, ao check, agent-ops-check.sh, init-repo.sh --dry-run smoke test, wrapper compat verified
 
 ## Current Objective
 
-No active task.
+consolidate tool surfaces under ao bridge
 
 ## Rules
 
-- Start exactly one task before implementation.
-- Keep the owner responsible for edits, verification, and final summary.
-- Advisors can comment, review, or research, but they do not edit the active
-  concern unless ownership is transferred.
+- Exactly one owner edits the active concern.
+- Agents must claim files before editing.
+- Advisors can research or review, but should not edit unless ownership is transferred.
 - Finish or park the active task before starting another.

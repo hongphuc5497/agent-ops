@@ -1,0 +1,14 @@
+{
+  "files_in_scope": [],
+  "finished_at": "2026-05-18T16:47:03.478840+00:00",
+  "id": "20260518-164312-consolidate-tool-surfaces-under-ao-bridge",
+  "out_of_scope": [],
+  "owner": "Hermes",
+  "repo": "/Users/hongphuc/repos/agent-ops",
+  "started_at": "2026-05-18T16:43:12.535182+00:00",
+  "status": "killed",
+  "task_file": ".ai/tasks/20260518-164312-consolidate-tool-surfaces-under-ao-bridge.md",
+  "title": "consolidate tool surfaces under ao bridge",
+  "verification": "bash -n scripts/*.sh, ao check, agent-ops-check.sh, init-repo.sh --dry-run smoke test",
+  "workflow": ".ai/workflows/feature.md"
+}

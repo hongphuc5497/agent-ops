@@ -27,7 +27,7 @@ readable, and runnable by one indie developer.
   ```bash
   bash -n scripts/*.sh
   python3 -m py_compile scripts/agent-ops-tool.py
-  ./scripts/task-status.sh
+  ./scripts/ao status
   ```
 
 - For workflow changes, dry-run the relevant script or checklist and update the

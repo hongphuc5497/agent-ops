@@ -59,6 +59,7 @@ copy_files=(
   "integrations/hermes/monitor.md"
   "integrations/mcp/README.md"
   "scripts/agent-ops-tool.py"
+  "scripts/ao"
   "scripts/install-integration.sh"
   "scripts/agent-ops-check.sh"
   "scripts/init-repo.sh"
@@ -178,6 +179,7 @@ done
 
 if [[ "$dry_run" -eq 0 ]]; then
   chmod +x "$target_root/scripts/agent-ops-tool.py"
+  chmod +x "$target_root/scripts/ao"
   chmod +x "$target_root/scripts/install-integration.sh"
   chmod +x "$target_root/scripts/agent-ops-check.sh"
   chmod +x "$target_root/scripts/init-repo.sh"

@@ -5,13 +5,13 @@ Purpose: reduce context switching and force one useful outcome.
 ## Start
 
 ```bash
-./scripts/task-status.sh
+./scripts/ao status
 ```
 
 If no task is active:
 
 ```bash
-./scripts/task-start.sh "short task title" Codex
+./scripts/ao start "short task title" --owner Codex
 ```
 
 ## Pick Work
@@ -34,6 +34,5 @@ Before stopping:
 - Active task finished or intentionally parked.
 
 ```bash
-./scripts/task-finish.sh done
+./scripts/ao finish done
 ```
-

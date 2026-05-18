@@ -19,6 +19,7 @@ required_files=(
   "integrations/hermes/monitor.md"
   "integrations/mcp/README.md"
   "scripts/agent-ops-tool.py"
+  "scripts/ao"
   "scripts/install-integration.sh"
   "scripts/init-repo.sh"
   "scripts/agent-ops-check.sh"
