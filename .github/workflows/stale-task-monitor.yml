@@ -1,31 +1,34 @@
-name: Agent Ops Check
+name: Stale Task Monitor
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
-      - master
+  schedule:
+    - cron: '0 9 * * *'  # Daily at 9 AM UTC
   workflow_dispatch:
 
 jobs:
-  check:
+  check-stale:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify agent ops control plane
-        run: ./scripts/agent-ops-check.sh
+      - name: Check for stale tasks
+        run: |
+          if python3 scripts/agent-ops-tool.py check 2>&1 | grep -q '"stale": true'; then
+            echo "STALE_TASK=true" >> "$GITHUB_ENV"
+            python3 scripts/agent-ops-tool.py status
+            exit 1
+          fi
+          echo "No stale tasks."
 
   notify-failure:
     name: Notify failure
-    needs: [check]
-    if: ${{ always() && needs.check.result == 'failure' }}
+    needs: [check-stale]
+    if: ${{ always() && needs.check-stale.result == 'failure' }}
     uses: ./.github/workflows/notify-failure.yml
     with:
       status: failure
       repo: ${{ github.repository }}
       workflow: ${{ github.workflow }}
-      job: check
+      job: check-stale
       branch: ${{ github.ref_name }}
       sha: ${{ github.sha }}
       actor: ${{ github.actor }}

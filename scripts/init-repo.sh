@@ -64,6 +64,7 @@ copy_files=(
   "scripts/agent-ops-check.sh"
   "scripts/init-repo.sh"
   ".github/workflows/agent-ops-check.yml"
+  ".github/workflows/notify-failure.yml"
 )
 
 generated_files=(
