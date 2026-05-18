@@ -1,110 +1,106 @@
 # Agent Ops
 
-Integration-first operating system for reliable AI-native developer workflows.
+Integration-first operating protocol for AI coding agents. Coordinate Codex,
+OpenCode, Augment, OpenClaw, Hermes, and future MCP tools through repo-native
+files — no daemon, no server, no new dependencies.
 
-This repo is not an agent framework. It is a shared operating protocol that AI
-coding agents can read or call before they edit: task ownership, file claims,
-routing, handoffs, verification, and focus rules.
+[📖 Case Study: How I Stopped AI Agents From Fighting My Repo](docs/case-study.md)
 
-## Start Here
-
-1. Read [.ai/protocol.md](/Users/hongphuc/repos/agent-ops/.ai/protocol.md).
-2. Ask Agent Ops for current state:
-
-   ```bash
-   ./scripts/agent-ops-tool.py status
-   ```
-
-3. Start one active task:
-
-   ```bash
-   ./scripts/agent-ops-tool.py start "ship routing v1" --owner Codex
-   ```
-
-4. Claim files before editing:
-
-   ```bash
-   ./scripts/agent-ops-tool.py claim ".ai/protocol.md" "scripts/agent-ops-tool.py"
-   ```
-
-5. Finish or park the task before starting another:
-
-   ```bash
-   ./scripts/agent-ops-tool.py finish done --verification "./scripts/agent-ops-check.sh"
-   ```
-
-## Core Rule
-
-One task owner at a time. Other agents can advise, review, or handle bounded
-sidecar work, but only the active owner edits the active concern.
-
-## Repo Map
-
-- `.ai/ARCHITECTURE.md` - full workflow architecture and 14-day plan.
-- `.ai/protocol.md` - shared protocol agents use to coordinate.
-- `.ai/schema/` - JSON schemas for tasks, file claims, and handoffs.
-- `.ai/workflows/` - daily, feature, debugging, CI, review, and experiment runbooks.
-- `.ai/automation/` - automation rules and current gates.
-- `.ai/prompts/` - reusable prompts for each tool role.
-- `.ai/memory/` - durable project memory that should compound.
-- `.ai/experiments/` - controlled experiment queue and kill criteria.
-- `.ai/templates/` - task, decision, and scoring templates.
-- `integrations/` - templates for Codex, OpenCode, Augment, OpenClaw, and Hermes.
-- `scripts/` - tiny local scripts for task ownership and reviews.
-
-## MVP Product Surface
-
-Agents should call the JSON bridge:
+## 5-Minute Start
 
 ```bash
-./scripts/agent-ops-tool.py route "debug failing playwright test"
-./scripts/agent-ops-tool.py start "fix CI failure" --repo /path/to/repo
-./scripts/agent-ops-tool.py claim "src/auth/**" "tests/auth/**"
-./scripts/agent-ops-tool.py handoff --to OpenCode --files "scripts/check.sh" --acceptance "passes bash -n"
-./scripts/agent-ops-tool.py finish done --verification "pytest tests/auth"
-```
+# Clone and seed
+git clone https://github.com/hongphuc5497/agent-ops.git
+cd agent-ops
 
-Humans can use the shell scripts, but the product direction is agent
-integration. The CLI is plumbing.
+# Check it works
+./scripts/ao check
 
-## Install Agent Instructions
-
-Seed Agent Ops into another repo:
-
-```bash
-./scripts/init-repo.sh /path/to/repo --dry-run
-./scripts/init-repo.sh /path/to/repo
-```
-
-Preview an integration:
-
-```bash
-./scripts/install-integration.sh codex --dry-run
-```
-
-Install repo-local instructions:
-
-```bash
+# Seed into another repo
+./scripts/init-repo.sh /path/to/your-project
+cd /path/to/your-project
 ./scripts/install-integration.sh codex
-./scripts/install-integration.sh opencode
-./scripts/install-integration.sh augment
-./scripts/install-integration.sh openclaw
-./scripts/install-integration.sh hermes
 ```
 
-This writes repo-local guidance only. It does not mutate global Codex,
-OpenCode, Hermes, or Augment config.
+## The Protocol
 
-## What This Avoids
+Every agent reads the same repo-native state before editing:
 
-- No new orchestration server in v1.
-- No agent swarm by default.
-- No shared edit surface across agents.
-- No experiments without a user pain hypothesis and kill date.
-- No full MCP server until the JSON bridge is useful in real repos.
+```bash
+ao status                           # Who owns the active task? What files are claimed?
+ao start "fix auth bug" --owner Codex  # Lock a task (only one active at a time)
+ao claim "src/auth/**"              # Claim files before editing
+ao check                            # Verify protocol health
+ao finish done --verification "..." # Complete with evidence
+```
+
+Human commands: `ao help`, `ao version`. Agents use the exact same surface.
+
+## What It Coordinates
+
+| Concern | File | Machine-Readable |
+|---------|------|:---:|
+| Active task owner | `.ai/state/active-task.json` | ✓ |
+| File ownership claims | `.ai/state/file-claims.json` | ✓ |
+| Agent handoffs | `.ai/state/handoffs.jsonl` | ✓ |
+| Task records | `.ai/tasks/*.md` + archive JSON | ✓ |
+| Routing rules | `ROUTING.md` | — |
+| Architecture decisions | `DECISIONS.md` | — |
+| Shared protocol | `.ai/protocol.md` | — |
+
+## Agent Integrations
+
+One command teaches each agent the protocol:
+
+```bash
+./scripts/install-integration.sh codex       # Appends to AGENTS.md
+./scripts/install-integration.sh opencode    # Appends to instructions.md
+./scripts/install-integration.sh augment     # Appends discovery guide
+./scripts/install-integration.sh openclaw    # Appends review rules
+./scripts/install-integration.sh hermes      # Appends monitor rules
+```
+
+Repo-local only — no global config mutated.
+
+## CI & Notifications
+
+GitHub Actions workflows run on every PR and daily:
+
+| Workflow | Trigger | Failure Alert |
+|----------|---------|:---:|
+| `agent-ops-check.yml` | PR, push to main | Telegram |
+| `stale-task-monitor.yml` | Daily 9AM UTC | Telegram |
+
+Set `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` secrets for notifications.
+Slack via `SLACK_WEBHOOK_URL` (optional).
+
+## What This Isn't
+
+- ❌ Not a hosted service or dashboard
+- ❌ Not an MCP server (gated on real-world usage)
+- ❌ Not an agent framework or orchestration runtime
+- ❌ No new dependencies beyond Python 3 and bash
+
+## Dogfooded On
+
+| Repo | Stack | Status |
+|------|-------|--------|
+| `personal-landing-page` | Next.js 16 / TS / Vercel | ✓ Active |
+| `github-digest` | Python / Playwright | ✓ Active |
+
+[Read the full dogfooding log](.ai/memory/phase3-dogfooding-log.md)
 
 ## Verify
 
 ```bash
 ./scripts/agent-ops-check.sh
 ```
+
+## Milestones
+
+[GitHub Milestones](https://github.com/hongphuc5497/agent-ops/milestones)
+
+1. ✓ MVP — Agent Integration Protocol
+2. ✓ Consolidate & Self-Bootstrap
+3. ✓ Dogfood & Document
+4. ○ Package & Distribute
