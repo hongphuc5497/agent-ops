@@ -284,6 +284,45 @@ def command_handoff(args: argparse.Namespace) -> None:
     emit({"ok": True, "handoff": event})
 
 
+def command_delegate(args: argparse.Namespace) -> None:
+    """Route a task description to the right agent and record a handoff.
+    
+    Requires an active task. Uses route inference to pick the best owner
+    unless --to is explicitly provided. Records a handoff from the current
+    owner to the delegated agent.
+    """
+    ensure_dirs()
+    task = active_task()
+    if not task:
+        emit({"ok": False, "error": "no active task to delegate from; start a task first"}, 1)
+
+    route = infer_route(args.description)
+    to_agent = args.to or route["owner"]
+    from_agent = args.from_owner or task["owner"]
+
+    event = {
+        "from": from_agent,
+        "to": to_agent,
+        "task_id": task["id"],
+        "description": args.description,
+        "files": args.files or [],
+        "acceptance": args.acceptance or route["verification"],
+        "verification": args.verification or route["verification"],
+        "notes": args.notes or "",
+        "created_at": now(),
+    }
+    with HANDOFFS_FILE.open("a") as handle:
+        handle.write(json.dumps(event, sort_keys=True) + "\n")
+
+    emit({
+        "ok": True,
+        "delegated_to": to_agent,
+        "delegated_from": from_agent,
+        "route": route,
+        "handoff": event,
+    })
+
+
 def command_finish(args: argparse.Namespace) -> None:
     ensure_dirs()
     task = active_task()
@@ -416,6 +455,16 @@ def build_parser() -> argparse.ArgumentParser:
     handoff.add_argument("--verification")
     handoff.add_argument("--notes")
     handoff.set_defaults(func=command_handoff)
+
+    delegate = sub.add_parser("delegate")
+    delegate.add_argument("description")
+    delegate.add_argument("--to")
+    delegate.add_argument("--from-owner")
+    delegate.add_argument("--files", action="append")
+    delegate.add_argument("--acceptance")
+    delegate.add_argument("--verification")
+    delegate.add_argument("--notes")
+    delegate.set_defaults(func=command_delegate)
 
     finish = sub.add_parser("finish")
     finish.add_argument("result", choices=["done", "parked", "killed"])

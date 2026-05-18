@@ -21,6 +21,9 @@ Usage:
   ao claim <paths...> [--owner <agent>] [--reason <text>]
   ao handoff --to <agent> --acceptance <text> [--from-owner <agent>]
              [--files <path>...] [--verification <text>] [--notes <text>]
+  ao delegate <description> [--to <agent>] [--from-owner <agent>]
+             [--files <path>...] [--acceptance <text>]
+             [--verification <text>] [--notes <text>]
   ao finish done|parked|killed [--verification <text>]
   ao check
   ao version
@@ -32,6 +35,7 @@ Commands:
   start     Create and lock an active task
   claim     Claim files for the active task
   handoff   Transfer file ownership to another agent
+  delegate  Auto-route a sub-task and record delegation handoff
   finish    Complete, park, or kill the active task
   check     Verify protocol health (files, schemas, stale tasks)
   version   Print ao version
@@ -51,7 +55,7 @@ if [[ ! -f "$BRIDGE" ]]; then
 fi
 
 case "${1:-}" in
-    status|route|start|claim|handoff|finish|check)
+    status|route|start|claim|handoff|delegate|finish|check)
         exec python3 "$BRIDGE" "$@"
         ;;
     version)
