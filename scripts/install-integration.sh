@@ -41,7 +41,7 @@ case "$integration" in
     fi
     if [[ "$dry_run" -eq 1 ]]; then
       echo "would append Agent Ops Codex rules to AGENTS.md"
-    elif rg -q "Agent Ops Rules for Codex" AGENTS.md; then
+    elif grep -q "Agent Ops Rules for Codex" AGENTS.md; then
       echo "AGENTS.md already contains Agent Ops Codex rules"
     else
       {
@@ -71,11 +71,11 @@ case "$integration" in
     fi
     if [[ "$dry_run" -eq 1 ]]; then
       echo "would append Agent Ops Claude rules to CLAUDE.md"
-    elif rg -q "Agent Ops Rules for Claude" CLAUDE.md; then
+    elif grep -q "Agent Ops Rules for Claude" CLAUDE.md; then
       echo "CLAUDE.md already contains Agent Ops Claude rules"
     else
       {
-        printf "\\n"
+        printf "\n"
         cat "$src"
       } >> CLAUDE.md
       echo "updated CLAUDE.md"

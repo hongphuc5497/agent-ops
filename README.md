@@ -104,3 +104,28 @@ Slack via `SLACK_WEBHOOK_URL` (optional).
 2. ✓ Consolidate & Self-Bootstrap
 3. ✓ Dogfood & Document
 4. ○ Package & Distribute
+
+## Demo
+
+```bash
+# Clone and seed into any repo in 30 seconds
+git clone https://github.com/hongphuc5497/agent-ops.git
+cd agent-ops
+./scripts/ao check                              # → OK
+
+# Seed into your project
+./scripts/init-repo.sh ~/my-project
+cd ~/my-project
+./scripts/install-integration.sh claude          # teach Claude
+./scripts/install-integration.sh codex           # teach Codex
+
+# Start a task — any agent now checks this first
+./scripts/ao start "add dark mode" --owner Claude
+./scripts/ao claim "src/theme/**"
+./scripts/ao delegate "review colors" --to OpenClaw
+./scripts/ao finish done --verification "npm test"
+
+# CI catches stale tasks daily, Telegram on failure
+```
+
+[📖 Full Setup Guide](docs/SETUP.md) · [🔌 Plug-and-Play Guide](docs/plug-and-play.md) · [📝 Case Study](docs/case-study.md)
