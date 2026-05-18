@@ -384,7 +384,7 @@ Day 5:
 Day 6:
 
 - Package v0.1 as a template repo.
-- Add setup script.
+- Add setup script for seeding Agent Ops into another repo.
 
 Day 7:
 

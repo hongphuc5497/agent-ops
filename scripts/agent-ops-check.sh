@@ -2,12 +2,9 @@
 set -euo pipefail
 
 required_files=(
-  "AGENTS.md"
-  "README.md"
   "TASK.md"
   "ROUTING.md"
   "DECISIONS.md"
-  ".ai/ARCHITECTURE.md"
   ".ai/protocol.md"
   ".ai/schema/task.schema.json"
   ".ai/schema/file-claims.schema.json"
@@ -21,6 +18,11 @@ required_files=(
   "integrations/openclaw/review.md"
   "integrations/hermes/monitor.md"
   "integrations/mcp/README.md"
+  "scripts/agent-ops-tool.py"
+  "scripts/install-integration.sh"
+  "scripts/init-repo.sh"
+  "scripts/agent-ops-check.sh"
+  ".github/workflows/agent-ops-check.yml"
   ".ai/workflows/daily.md"
   ".ai/workflows/feature.md"
   ".ai/workflows/debugging.md"

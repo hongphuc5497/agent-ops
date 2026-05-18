@@ -69,6 +69,13 @@ integration. The CLI is plumbing.
 
 ## Install Agent Instructions
 
+Seed Agent Ops into another repo:
+
+```bash
+./scripts/init-repo.sh /path/to/repo --dry-run
+./scripts/init-repo.sh /path/to/repo
+```
+
 Preview an integration:
 
 ```bash

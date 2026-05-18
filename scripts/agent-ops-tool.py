@@ -329,16 +329,17 @@ No active task.
 def command_check(_: argparse.Namespace) -> None:
     ensure_dirs()
     required = [
-        "AGENTS.md",
-        "README.md",
         "TASK.md",
         "ROUTING.md",
         "DECISIONS.md",
-        ".ai/ARCHITECTURE.md",
         ".ai/protocol.md",
         ".ai/schema/task.schema.json",
         ".ai/schema/file-claims.schema.json",
         ".ai/schema/handoff.schema.json",
+        "scripts/agent-ops-tool.py",
+        "scripts/install-integration.sh",
+        "scripts/init-repo.sh",
+        "scripts/agent-ops-check.sh",
     ]
     missing = [path for path in required if not (ROOT / path).exists()]
     invalid_json: list[str] = []
