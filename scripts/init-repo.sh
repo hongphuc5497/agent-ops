@@ -85,10 +85,75 @@ generated_files=(
   ".ai/state/handoffs.jsonl"
 )
 
+get_default_content() {
+  local rel="$1"
+  case "$rel" in
+    TASK.md)
+      printf '%s\n' \
+        "# Active Task" \
+        "" \
+        "Status: none" \
+        "Owner: none" \
+        "Started: none" \
+        "Task file: none" \
+        "" \
+        "## Current Objective" \
+        "" \
+        "No active task." \
+        "" \
+        "## Rules" \
+        "" \
+        "- Start exactly one task before implementation." \
+        "- Keep the owner responsible for edits, verification, and final summary." \
+        "- Advisors can comment, review, or research, but they do not edit the active" \
+        "  concern unless ownership is transferred." \
+        "- Finish or park the active task before starting another."
+      ;;
+    DECISIONS.md)
+      printf '%s\n' \
+        "# Decisions" \
+        "" \
+        "Record durable workflow, architecture, and product decisions here."
+      ;;
+    .ai/state/file-claims.json)
+      printf '%s\n' '{' '  "claims": []' '}'
+      ;;
+    .ai/state/handoffs.jsonl)
+      # empty file
+      ;;
+    *)
+      echo "unknown generated file: $rel" >&2
+      exit 1
+      ;;
+  esac
+}
+
+is_generated_file() {
+  local rel="$1"
+  local item
+  for item in "${generated_files[@]}"; do
+    if [[ "$item" == "$rel" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 check_conflict() {
   local rel="$1"
   local dst="$target_root/$rel"
+  local src="$source_root/$rel"
   if [[ "$force" -eq 0 && -e "$dst" ]]; then
+    # If the file exists and is identical to what we would write/copy, it is not a conflict
+    if is_generated_file "$rel"; then
+      if [[ -f "$dst" ]] && get_default_content "$rel" | cmp -s - "$dst"; then
+        return 0
+      fi
+    else
+      if [[ -f "$src" && -f "$dst" ]] && cmp -s "$src" "$dst"; then
+        return 0
+      fi
+    fi
     echo "would overwrite existing file: $rel" >&2
     return 1
   fi
@@ -133,47 +198,7 @@ write_file() {
     return
   fi
   ensure_parent "$rel"
-  case "$rel" in
-    TASK.md)
-      printf '%s\n' \
-        "# Active Task" \
-        "" \
-        "Status: none" \
-        "Owner: none" \
-        "Started: none" \
-        "Task file: none" \
-        "" \
-        "## Current Objective" \
-        "" \
-        "No active task." \
-        "" \
-        "## Rules" \
-        "" \
-        "- Start exactly one task before implementation." \
-        "- Keep the owner responsible for edits, verification, and final summary." \
-        "- Advisors can comment, review, or research, but they do not edit the active" \
-        "  concern unless ownership is transferred." \
-        "- Finish or park the active task before starting another." \
-        > "$target_root/$rel"
-      ;;
-    DECISIONS.md)
-      printf '%s\n' \
-        "# Decisions" \
-        "" \
-        "Record durable workflow, architecture, and product decisions here." \
-        > "$target_root/$rel"
-      ;;
-    .ai/state/file-claims.json)
-      printf '%s\n' '{' '  "claims": []' '}' > "$target_root/$rel"
-      ;;
-    .ai/state/handoffs.jsonl)
-      : > "$target_root/$rel"
-      ;;
-    *)
-      echo "unknown generated file: $rel" >&2
-      exit 1
-      ;;
-  esac
+  get_default_content "$rel" > "$target_root/$rel"
   echo "wrote $rel"
 }
 

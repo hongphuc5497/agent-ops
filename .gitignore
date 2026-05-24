@@ -6,3 +6,7 @@
 # Python cache from local script execution.
 __pycache__/
 *.pyc
+
+# Local IDE config and logs
+.antigravitycli/
+.gemini/

@@ -1,0 +1,15 @@
+{
+  "files_in_scope": [],
+  "finished_at": "2026-05-20T18:09:39.552069+00:00",
+  "id": "20260520-180805-ignore-machine-local-ide-config-files",
+  "out_of_scope": [],
+  "owner": "Codex",
+  "repo": "",
+  "started_at": "2026-05-20T18:08:05.088097+00:00",
+  "status": "done",
+  "task_file": ".ai/tasks/20260520-180805-ignore-machine-local-ide-config-files.md",
+  "title": "Ignore machine-local IDE config files",
+  "verification": "targeted tests, lint, build, or browser check as appropriate",
+  "verification_result": "added .antigravitycli/ and .gemini/ to .gitignore and verified git status is clean of IDE-specific config files.",
+  "workflow": ".ai/workflows/feature.md"
+}

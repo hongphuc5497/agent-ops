@@ -31,7 +31,7 @@ Started: 2026-05-18
 ### 2. `--force` needed even for clean targets
 **Severity:** Low
 **Repro:** Both repos had zero Agent Ops files, yet init-repo.sh still required `--force`. Investigation needed: is the conflict check too aggressive?
-**Status:** Worked with `--force`, but the user experience is confusing when no files exist.
+**Status:** Fixed. Refactored `check_conflict` in `init-repo.sh` to allow overwriting existing files if their contents are identical to the source copy files or default generated templates. This allows running the initializer multiple times safely without requiring `--force`.
 
 ### 3. `ao` subcommand discovery missing
 **Severity:** Low
@@ -54,7 +54,7 @@ Started: 2026-05-18
 
 ## Next Actions
 
-1. Fix friction point #1: add git repo check to init-repo.sh
-2. Investigate friction point #2: why --force needed for clean targets
-3. Add `scripts/ao route` to the init-repo.sh chmod list (already done)
-4. Write public case study once 3+ repos are dogfooded
+1. [x] Fix friction point #1: add git repo check to init-repo.sh
+2. [x] Investigate/fix friction point #2: why --force needed for clean targets (resolved by checking file identity)
+3. [x] Add `scripts/ao route` to the init-repo.sh chmod list (already done)
+4. [ ] Write public case study once 3+ repos are dogfooded
