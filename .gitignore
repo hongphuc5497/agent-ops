@@ -10,3 +10,5 @@ __pycache__/
 # Local IDE config and logs
 .antigravitycli/
 .gemini/
+
+.ai/

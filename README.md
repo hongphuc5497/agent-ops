@@ -87,6 +87,15 @@ Slack via `SLACK_WEBHOOK_URL` (optional).
 |------|-------|--------|
 | `personal-landing-page` | Next.js 16 / TS / Vercel | ✓ Active |
 | `github-digest` | Python / Playwright | ✓ Active |
+| `AutoCreateVideo` | Node / TypeScript / Vitest | ✓ Active |
+| `vite-virtual-cafe` | Remix / Vite / Playwright | ✓ Active |
+| `skills` | Markdown / shell / Python validators | ✓ Active |
+| `zsh-dotfiles` | Shell / dotfiles | ✓ Active |
+| `vibe-coding-learning` | Static learning repo | ✓ Active |
+| `prompt-enhancer` | Python / stdlib CLI | ✓ Active |
+| `MiroFish` | Flask / Python + Node frontend | ✓ Active |
+| `obsidian-wiki` | Markdown / Python scripts | ✓ Active |
+| `TradingAgents` | Python / finance analysis | ✓ Active |
 
 [Read the full dogfooding log](.ai/memory/phase3-dogfooding-log.md)
 
@@ -103,7 +112,7 @@ Slack via `SLACK_WEBHOOK_URL` (optional).
 1. ✓ MVP — Agent Integration Protocol
 2. ✓ Consolidate & Self-Bootstrap
 3. ✓ Dogfood & Document
-4. ○ Package & Distribute
+4. ✓ Package & Distribute
 
 ## Demo
 
