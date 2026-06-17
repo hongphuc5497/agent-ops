@@ -2,24 +2,26 @@
 
 Integration-first operating protocol for AI coding agents. Coordinate Codex,
 OpenCode, Augment, OpenClaw, Hermes, and future MCP tools through repo-native
-files — no daemon, no server, no new dependencies.
+files. The default workflow is file-only; the optional kanban UI runs as a
+localhost-only server when you ask for it.
 
 [📖 Case Study: How I Stopped AI Agents From Fighting My Repo](docs/case-study.md)
 
 ## 5-Minute Start
 
 ```bash
-# Clone and seed
-git clone https://github.com/hongphuc5497/agent-ops.git
-cd agent-ops
+# Seed into an existing repo
+cd /path/to/your-project
+npx agent-ops init
 
 # Check it works
-./scripts/ao check
+agent-ops check
 
-# Seed into another repo
-./scripts/init-repo.sh /path/to/your-project
-cd /path/to/your-project
-./scripts/install-integration.sh codex
+# Open the local task board
+agent-ops kanban
+
+# Teach Codex the protocol
+agent-ops install codex
 ```
 
 ## The Protocol
@@ -27,14 +29,16 @@ cd /path/to/your-project
 Every agent reads the same repo-native state before editing:
 
 ```bash
-ao status                           # Who owns the active task? What files are claimed?
-ao start "fix auth bug" --owner Codex  # Lock a task (only one active at a time)
-ao claim "src/auth/**"              # Claim files before editing
-ao check                            # Verify protocol health
-ao finish done --verification "..." # Complete with evidence
+agent-ops status                              # Who owns the active task?
+agent-ops start "fix auth bug" --owner Codex # Lock a task
+agent-ops claim "src/auth/**"                # Claim files before editing
+agent-ops check                              # Verify protocol health
+agent-ops finish done --verification "..."   # Complete with evidence
+agent-ops kanban --no-open                   # Open a command-backed board
 ```
 
-Human commands: `ao help`, `ao version`. Agents use the exact same surface.
+Human commands: `agent-ops help`, `agent-ops version`. Agents can also use the
+repo-local `./scripts/ao` wrapper after initialization.
 
 ## What It Coordinates
 
@@ -53,14 +57,33 @@ Human commands: `ao help`, `ao version`. Agents use the exact same surface.
 One command teaches each agent the protocol:
 
 ```bash
-./scripts/install-integration.sh codex       # Appends to AGENTS.md
-./scripts/install-integration.sh opencode    # Appends to instructions.md
-./scripts/install-integration.sh augment     # Appends discovery guide
-./scripts/install-integration.sh openclaw    # Appends review rules
-./scripts/install-integration.sh hermes      # Appends monitor rules
+agent-ops install list        # Show supported integrations
+agent-ops install codex       # Appends to AGENTS.md
+agent-ops install opencode    # Appends to instructions.md
+agent-ops install augment     # Appends discovery guide
+agent-ops install openclaw    # Appends review rules
+agent-ops install hermes      # Appends monitor rules
 ```
 
 Repo-local only — no global config mutated.
+
+Install support is different from live coordination. The install script writes
+the files an agent reads; `ROUTING.md`, `TASK.md`, and `ao` define what that
+agent may do once work starts. See the [supported integrations matrix](docs/supported-integrations.md).
+
+## Kanban UI
+
+```bash
+agent-ops kanban
+agent-ops kanban --no-open
+agent-ops kanban --port 4783
+```
+
+The board reads the same protocol files as the CLI and writes only through
+Agent Ops commands. It can create backlog or active tasks, update task metadata,
+claim files for the active task, and finish or park the active task. V1 is
+intentionally local-only and does not include drag-and-drop; Agent Ops still
+allows exactly one active owner at a time.
 
 ## CI & Notifications
 
@@ -76,10 +99,10 @@ Slack via `SLACK_WEBHOOK_URL` (optional).
 
 ## What This Isn't
 
-- ❌ Not a hosted service or dashboard
+- ❌ Not a hosted service or cloud dashboard
 - ❌ Not an MCP server (gated on real-world usage)
 - ❌ Not an agent framework or orchestration runtime
-- ❌ No new dependencies beyond Python 3 and bash
+- ❌ No package dependencies beyond Node, Python 3, and bash
 
 ## Dogfooded On
 
@@ -102,7 +125,7 @@ Slack via `SLACK_WEBHOOK_URL` (optional).
 ## Verify
 
 ```bash
-./scripts/agent-ops-check.sh
+agent-ops check
 ```
 
 ## Milestones
@@ -117,24 +140,19 @@ Slack via `SLACK_WEBHOOK_URL` (optional).
 ## Demo
 
 ```bash
-# Clone and seed into any repo in 30 seconds
-git clone https://github.com/hongphuc5497/agent-ops.git
-cd agent-ops
-./scripts/ao check                              # → OK
-
 # Seed into your project
-./scripts/init-repo.sh ~/my-project
 cd ~/my-project
-./scripts/install-integration.sh claude          # teach Claude
-./scripts/install-integration.sh codex           # teach Codex
+npx agent-ops init                              # install protocol files
+npx agent-ops install claude                    # teach Claude
+npx agent-ops install codex                     # teach Codex
 
 # Start a task — any agent now checks this first
-./scripts/ao start "add dark mode" --owner Claude
-./scripts/ao claim "src/theme/**"
-./scripts/ao delegate "review colors" --to OpenClaw
-./scripts/ao finish done --verification "npm test"
+agent-ops start "add dark mode" --owner Claude
+agent-ops claim "src/theme/**"
+agent-ops delegate "review colors" --to OpenClaw
+agent-ops finish done --verification "npm test"
 
 # CI catches stale tasks daily, Telegram on failure
 ```
 
-[📖 Full Setup Guide](docs/SETUP.md) · [🔌 Plug-and-Play Guide](docs/plug-and-play.md) · [📝 Case Study](docs/case-study.md)
+[Full Setup Guide](docs/SETUP.md) · [Plug-and-Play Guide](docs/plug-and-play.md) · [Supported Integrations](docs/supported-integrations.md) · [Case Study](docs/case-study.md)

@@ -1,8 +1,5 @@
 .DS_Store
 
-# Machine-local active task lock.
-.ai/state/active-task.json
-
 # Python cache from local script execution.
 __pycache__/
 *.pyc
@@ -11,4 +8,8 @@ __pycache__/
 .antigravitycli/
 .gemini/
 
+# Agent Ops working directory — created/managed by agent-ops at runtime.
 .ai/
+
+# Brainstorm / session scratch artifacts.
+.superpowers/

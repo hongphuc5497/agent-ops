@@ -6,13 +6,36 @@ shell commands. Here's how to wire it into each agent in 30 seconds.
 ## The Pattern (Same for All)
 
 ```
-1. Seed the protocol     →  ./scripts/init-repo.sh .
-2. Teach your agent      →  ./scripts/install-integration.sh <agent>
-3. Agent reads state     →  ./scripts/ao status
-4. Agent locks a task    →  ./scripts/ao start "task" --owner <agent>
-5. Agent claims files    →  ./scripts/ao claim "src/**"
-6. Agent finishes        →  ./scripts/ao finish done --verification "..."
+1. Seed the protocol     →  npx agent-ops init
+2. Teach your agent      →  agent-ops install <agent>
+3. Agent reads state     →  agent-ops status
+4. Agent locks a task    →  agent-ops start "task" --owner <agent>
+5. Agent claims files    →  agent-ops claim "src/**"
+6. Agent finishes        →  agent-ops finish done --verification "..."
+7. Human opens board     →  agent-ops kanban
 ```
+
+To see the current supported agents:
+
+```bash
+agent-ops install list
+```
+
+Agent Ops keeps install setup and live coordination separate. The install
+template teaches an agent the protocol; `TASK.md`, file claims, handoffs, and
+verification decide what the agent may do during active work.
+
+The optional board is just another command-backed view:
+
+```bash
+agent-ops kanban
+agent-ops kanban --no-open
+agent-ops kanban --port 4783
+```
+
+It runs on `127.0.0.1`, reads the same repo files, and writes through Agent Ops
+commands. V1 lets users create and update tasks, claim files for the active
+task, and finish or park the active task. It does not support drag-and-drop.
 
 ---
 
@@ -22,7 +45,7 @@ shell commands. Here's how to wire it into each agent in 30 seconds.
 
 ```bash
 # Install in your repo
-./scripts/install-integration.sh claude
+agent-ops install claude
 ```
 
 **What it does:** Appends Agent Ops rules to `CLAUDE.md`. Claude Code reads this
@@ -52,7 +75,7 @@ cat CLAUDE.md | grep "Agent Ops Rules for Claude"
 **Config file:** `AGENTS.md` (repo root)
 
 ```bash
-./scripts/install-integration.sh codex
+agent-ops install codex
 ```
 
 **What it does:** Appends Agent Ops rules to `AGENTS.md`. Codex reads this file
@@ -70,7 +93,7 @@ cat AGENTS.md | grep "Agent Ops Rules for Codex"
 **Config file:** `.ai/integrations/hermes-monitor.md`
 
 ```bash
-./scripts/install-integration.sh hermes
+agent-ops install hermes
 ```
 
 **What it does:** Writes monitor instructions. Hermes acts as the watcher —
@@ -94,7 +117,7 @@ cat .ai/integrations/hermes-monitor.md
 **Config file:** `.ai/integrations/augment-discovery.md`
 
 ```bash
-./scripts/install-integration.sh augment
+agent-ops install augment
 ```
 
 **What it does:** Writes a discovery prompt template. Augment is codebase
@@ -121,10 +144,19 @@ cat .ai/integrations/augment-discovery.md
 
 | Agent | Command | Output | Role |
 |-------|---------|--------|------|
-| Claude | `./scripts/install-integration.sh claude` | Appends to `CLAUDE.md` | Brain or worker |
-| Codex | `./scripts/install-integration.sh codex` | Appends to `AGENTS.md` | Default implementer |
-| Hermes | `./scripts/install-integration.sh hermes` | Writes monitor rules | Watcher / notifier |
-| Augment | `./scripts/install-integration.sh augment` | Writes discovery guide | Codebase navigator |
+| Claude | `agent-ops install claude` | Appends to `CLAUDE.md` | Brain or worker |
+| Codex | `agent-ops install codex` | Appends to `AGENTS.md` | Default implementer |
+| OpenCode | `agent-ops install opencode` | Writes `.ai/integrations/opencode-instructions.md` | Isolated implementation lane |
+| Hermes | `agent-ops install hermes` | Writes monitor rules | Watcher / notifier |
+| Augment | `agent-ops install augment` | Writes discovery guide | Codebase navigator |
+| OpenClaw | `agent-ops install openclaw` | Writes review rules | Product / scope reviewer |
+
+| Human UI | Command | Output | Role |
+|----------|---------|--------|------|
+| Kanban | `agent-ops kanban` | Local task board | Create/update tasks and inspect ownership |
+
+See [Supported Integrations](supported-integrations.md) for the full matrix and
+the checklist for adding a new agent.
 
 ---
 
@@ -132,17 +164,17 @@ cat .ai/integrations/augment-discovery.md
 
 ```bash
 # 1. Seed Agent Ops
-./scripts/init-repo.sh /path/to/your-repo
 cd /path/to/your-repo
+npx agent-ops init
 
 # 2. Install all agent integrations
-./scripts/install-integration.sh claude
-./scripts/install-integration.sh codex
-./scripts/install-integration.sh hermes
-./scripts/install-integration.sh augment
+agent-ops install claude
+agent-ops install codex
+agent-ops install hermes
+agent-ops install augment
 
 # 3. Verify
-./scripts/ao check
+agent-ops check
 
 # 4. Start coding with any agent — they all respect the same protocol
 ```

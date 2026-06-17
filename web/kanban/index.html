@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agent Ops Kanban</title>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('agent-ops-theme');
+          var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="topbar-title">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow">Local repo board</p>
+            <h1>Agent Ops Kanban</h1>
+          </div>
+        </div>
+        <div class="topbar-meta">
+          <code id="repo-path" title="Repository">Loading repo...</code>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle light / dark"></button>
+          <button class="button secondary" id="refresh-button" type="button">Refresh</button>
+          <button class="button primary" id="new-task-button" type="button">New task</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar" aria-label="Filters">
+          <section class="panel">
+            <h2>Filters</h2>
+            <label class="check-row">
+              <input id="show-killed" type="checkbox">
+              <span>Show killed</span>
+            </label>
+            <label class="check-row">
+              <input id="active-only" type="checkbox">
+              <span>Active and backlog only</span>
+            </label>
+          </section>
+          <section class="panel">
+            <h2>Health</h2>
+            <div id="health-panel" class="health-panel">Waiting for snapshot.</div>
+            <button class="button secondary full" id="check-button" type="button">Run check</button>
+          </section>
+          <section class="panel">
+            <h2>Claims</h2>
+            <div id="claims-panel" class="chip-list empty">No claims.</div>
+          </section>
+        </aside>
+
+        <section class="board-zone" aria-label="Task board">
+          <div id="error-region" class="error-region" hidden></div>
+          <div id="loading-region" class="loading-grid" aria-live="polite">
+            <div class="skeleton-column"></div>
+            <div class="skeleton-column"></div>
+            <div class="skeleton-column"></div>
+            <div class="skeleton-column"></div>
+          </div>
+          <div id="board" class="board" hidden></div>
+        </section>
+
+        <aside id="task-drawer" class="drawer" aria-label="Task editor">
+          <form id="task-form">
+            <div class="drawer-head">
+              <div>
+                <p class="eyebrow">Command backed edit</p>
+                <h2 id="drawer-title">New task</h2>
+              </div>
+              <button class="button secondary" id="clear-selection" type="button">Clear</button>
+            </div>
+
+            <input id="task-id" type="hidden">
+
+            <label>
+              <span>Title</span>
+              <input id="task-title" name="title" required>
+            </label>
+
+            <label>
+              <span>Owner</span>
+              <input id="task-owner" name="owner" placeholder="Codex">
+            </label>
+
+            <label>
+              <span>Workflow</span>
+              <input id="task-workflow" name="workflow" placeholder=".ai/workflows/feature.md">
+            </label>
+
+            <label>
+              <span>Verification</span>
+              <textarea id="task-verification" name="verification" rows="4" spellcheck="false"></textarea>
+            </label>
+
+            <label>
+              <span>Files in scope</span>
+              <textarea id="task-files" name="files" rows="3" placeholder="One path per line" spellcheck="false"></textarea>
+            </label>
+
+            <label>
+              <span>Out of scope</span>
+              <textarea id="task-out-of-scope" name="outOfScope" rows="3" placeholder="One path per line" spellcheck="false"></textarea>
+            </label>
+
+            <label class="check-row">
+              <input id="task-active" type="checkbox">
+              <span>Create as active task</span>
+            </label>
+
+            <div id="form-error" class="error-region compact" hidden></div>
+
+            <div class="command-note" id="command-note">
+              Command: create-task or update-task
+            </div>
+
+            <div class="drawer-actions">
+              <button class="button primary" type="submit">Save</button>
+              <button class="button secondary" id="claim-button" type="button">Claim files</button>
+              <button class="button secondary" id="finish-button" type="button">Finish</button>
+              <button class="button danger" id="park-button" type="button">Park</button>
+            </div>
+          </form>
+        </aside>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
