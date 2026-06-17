@@ -1,0 +1,42 @@
+{
+  "name": "agent-ops",
+  "version": "0.1.0",
+  "description": "Repo-native operating protocol for AI coding agents.",
+  "license": "MIT",
+  "bin": {
+    "agent-ops": "bin/agent-ops.js",
+    "ao": "bin/agent-ops.js"
+  },
+  "files": [
+    "bin/agent-ops.js",
+    "bin/kanban-server.js",
+    "web/kanban/",
+    "scripts/ao",
+    "scripts/agent-ops-tool.py",
+    "scripts/agent-ops-check.sh",
+    "scripts/init-repo.sh",
+    "scripts/install-integration.sh",
+    "scripts/task-finish.sh",
+    "scripts/task-start.sh",
+    "scripts/task-status.sh",
+    "scripts/weekly-review.sh",
+    "integrations/",
+    ".ai/protocol.md",
+    ".ai/schema/",
+    ".ai/templates/",
+    ".ai/workflows/",
+    ".github/workflows/",
+    "docs/",
+    "README.md",
+    "ROUTING.md",
+    "DECISIONS.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node tests/package-cli.test.js && node tests/kanban-data.test.js && node tests/kanban-server.test.js && bash -n scripts/*.sh && python3 -m py_compile scripts/agent-ops-tool.py && ./scripts/agent-ops-check.sh",
+    "pack:check": "npm pack --dry-run"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

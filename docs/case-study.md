@@ -73,14 +73,14 @@ I seeded Agent Ops into two of my own repos with different stacks:
 
 | Repo | Stack | Agent Ops Init | Task Cycles |
 |------|-------|---------------|-------------|
-| `personal-landing-page` | Next.js 16 / TypeScript / Vercel | 32 files, instant | Full cycle: start → claim → check → finish |
-| `github-digest` | Python / Playwright / DeepSeek API | 32 files, instant | Full cycle: start → claim → check → finish |
+| `personal-landing-page` | Next.js 16 / TypeScript / Vercel | Protocol files, instant | Full cycle: start → claim → check → finish |
+| `github-digest` | Python / Playwright / DeepSeek API | Protocol files, instant | Full cycle: start → claim → check → finish |
 
 Both repos passed the check suite immediately after seeding. The full task cycle
 (start → claim → check → finish) took under 2 seconds per repo.
 
 ### What Worked Immediately
-- `init-repo.sh` copied exactly the right files (32 files, zero manual fixes)
+- `init-repo.sh` copied exactly the right protocol files with zero manual fixes
 - `agent-ops-check.sh` passed in both target repos on first run
 - The `ao` CLI worked identically across Next.js and Python repos
 - `install-integration.sh codex` correctly appended rules to AGENTS.md
@@ -97,25 +97,26 @@ Both repos passed the check suite immediately after seeding. The full task cycle
 
 ```bash
 # Seed Agent Ops into your repo
-./scripts/init-repo.sh /path/to/your-project
+cd /path/to/your-project
+npx agent-ops init
 
 # Install agent integration (Codex, OpenCode, etc.)
-./scripts/install-integration.sh codex
+agent-ops install codex
 
 # Check state
-./scripts/ao status
+agent-ops status
 
 # Start a task (only one active at a time)
-./scripts/ao start "add dark mode toggle" --owner Codex
+agent-ops start "add dark mode toggle" --owner Codex
 
 # Claim files before editing
-./scripts/ao claim "src/theme/**" "tests/theme/**"
+agent-ops claim "src/theme/**" "tests/theme/**"
 
 # Finish and verify
-./scripts/ao finish done --verification "npm test && npm run lint"
+agent-ops finish done --verification "npm test && npm run lint"
 
 # Health check
-./scripts/ao check
+agent-ops check
 ```
 
 Any agent that can run a shell command can be taught this protocol. The
@@ -141,7 +142,7 @@ The instinct is to make a dashboard, a service, an orchestration runtime. Resist
 it. The repo IS the platform. The file system IS the database. Git IS the
 synchronization layer. Everything else is premature.
 
-Agent Ops is 32 files and a Python script. It's boring. It works.
+Agent Ops is protocol files and a Python script. It's boring. It works.
 
 ---
 

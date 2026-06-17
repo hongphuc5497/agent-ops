@@ -5,6 +5,7 @@ required_files=(
   "TASK.md"
   "ROUTING.md"
   "DECISIONS.md"
+  "docs/supported-integrations.md"
   ".ai/protocol.md"
   ".ai/schema/task.schema.json"
   ".ai/schema/file-claims.schema.json"

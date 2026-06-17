@@ -47,6 +47,7 @@ fi
 
 copy_files=(
   "ROUTING.md"
+  "docs/supported-integrations.md"
   ".ai/protocol.md"
   ".ai/schema/task.schema.json"
   ".ai/schema/file-claims.schema.json"
