@@ -14,6 +14,7 @@ const columns = [
 
 const els = {
   repoPath: document.querySelector('#repo-path'),
+  themeToggle: document.querySelector('#theme-toggle'),
   refresh: document.querySelector('#refresh-button'),
   newTask: document.querySelector('#new-task-button'),
   check: document.querySelector('#check-button'),
@@ -158,16 +159,39 @@ function renderBoard() {
   });
 }
 
+function initials(owner) {
+  const value = (owner || '').trim();
+  if (!value) {
+    return '—';
+  }
+  const parts = value.split(/[\s_-]+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]);
+  }
+  return value.slice(0, 2);
+}
+
+function shortStamp(id) {
+  const match = /^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/.exec(id || '');
+  return match ? `${match[2]}/${match[3]} ${match[4]}:${match[5]}` : '';
+}
+
 function taskCard(task) {
   const selected = task.id === state.selectedId ? ' selected' : '';
   const verification = task.verification_result || task.verification || 'No verification recorded.';
   const owner = task.owner || 'unowned';
+  const stamp = shortStamp(task.id);
   return `
     <button class="task-card${selected}" type="button" data-id="${escapeHtml(task.id)}">
+      <div class="card-top">
+        <span class="pill">${escapeHtml(task.status)}</span>
+      </div>
       <p class="task-title">${escapeHtml(task.title || task.id)}</p>
-      <p class="task-meta">${escapeHtml(owner)} / ${escapeHtml(task.status)}</p>
       <p class="task-note mono">${escapeHtml(verification)}</p>
-      <span class="task-id">${escapeHtml(task.id)}</span>
+      <div class="card-foot">
+        <span class="owner"><span class="avatar">${escapeHtml(initials(owner))}</span><span>${escapeHtml(owner)}</span></span>
+        ${stamp ? `<span class="task-id">${escapeHtml(stamp)}</span>` : ''}
+      </div>
     </button>
   `;
 }
@@ -342,4 +366,29 @@ els.check.addEventListener('click', async () => {
   }
 });
 
+const THEME_ICONS = {
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
+};
+
+function currentTheme() {
+  return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+}
+
+function syncThemeIcon() {
+  els.themeToggle.innerHTML = currentTheme() === 'dark' ? THEME_ICONS.sun : THEME_ICONS.moon;
+}
+
+els.themeToggle.addEventListener('click', () => {
+  const next = currentTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try {
+    localStorage.setItem('agent-ops-theme', next);
+  } catch (error) {
+    /* ignore storage errors */
+  }
+  syncThemeIcon();
+});
+
+syncThemeIcon();
 loadSnapshot();

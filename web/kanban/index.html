@@ -4,17 +4,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Agent Ops Kanban</title>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('agent-ops-theme');
+          var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <div class="app-shell">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">Local repo board</p>
-          <h1>Agent Ops Kanban</h1>
+        <div class="topbar-title">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow">Local repo board</p>
+            <h1>Agent Ops Kanban</h1>
+          </div>
         </div>
         <div class="topbar-meta">
-          <code id="repo-path">Loading repo...</code>
+          <code id="repo-path" title="Repository">Loading repo...</code>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle theme" title="Toggle light / dark"></button>
           <button class="button secondary" id="refresh-button" type="button">Refresh</button>
           <button class="button primary" id="new-task-button" type="button">New task</button>
         </div>
@@ -30,7 +45,7 @@
             </label>
             <label class="check-row">
               <input id="active-only" type="checkbox">
-              <span>Active and backlog</span>
+              <span>Active and backlog only</span>
             </label>
           </section>
           <section class="panel">
