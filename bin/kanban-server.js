@@ -124,11 +124,20 @@ function readBody(req) {
   });
 }
 
+function isLoopbackHost(req) {
+  const host = req.headers.host;
+  if (!host) {
+    return true;
+  }
+  const name = host.replace(/:\d+$/, '').replace(/^\[|\]$/g, '');
+  return name === '127.0.0.1' || name === 'localhost' || name === '::1';
+}
+
 function serveStatic(req, res) {
   const requestPath = new URL(req.url, 'http://127.0.0.1').pathname;
   const relative = requestPath === '/' ? 'index.html' : requestPath.slice(1);
   const filePath = path.resolve(staticRoot, relative);
-  if (!filePath.startsWith(staticRoot) || !fs.existsSync(filePath)) {
+  if ((filePath !== staticRoot && !filePath.startsWith(staticRoot + path.sep)) || !fs.existsSync(filePath)) {
     sendJson(res, 404, { ok: false, error: 'not found' });
     return;
   }
@@ -258,6 +267,10 @@ async function main() {
   }
 
   const server = http.createServer((req, res) => {
+    if (!isLoopbackHost(req)) {
+      sendJson(res, 403, { ok: false, error: 'forbidden: non-loopback host' });
+      return;
+    }
     if (req.url.startsWith('/api/')) {
       handleApi(req, res);
     } else {
