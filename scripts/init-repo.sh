@@ -203,6 +203,27 @@ write_file() {
   echo "wrote $rel"
 }
 
+# .ai/ holds runtime state (active task, file claims, handoffs, task records)
+# that agent-ops writes during work. It must never be committed — doing so
+# leaks local paths and workflow metadata, especially in public repos.
+ensure_gitignore() {
+  local gi="$target_root/.gitignore"
+  if [[ -f "$gi" ]] && grep -qE '^/?\.ai/?$' "$gi"; then
+    echo ".gitignore already ignores .ai/"
+    return 0
+  fi
+  if [[ "$dry_run" -eq 1 ]]; then
+    echo "would add .ai/ to .gitignore"
+    return 0
+  fi
+  {
+    [[ -s "$gi" ]] && printf '\n'
+    printf '%s\n' "# Agent Ops runtime directory (managed by agent-ops init)."
+    printf '%s\n' ".ai/"
+  } >> "$gi"
+  echo "updated .gitignore: ignore .ai/"
+}
+
 if [[ "$dry_run" -eq 0 ]]; then
   mkdir -p "$target_root/.ai/tasks/archive" "$target_root/.ai/reviews"
 fi
@@ -214,6 +235,8 @@ done
 for rel in "${generated_files[@]}"; do
   write_file "$rel"
 done
+
+ensure_gitignore
 
 if [[ "$dry_run" -eq 0 ]]; then
   chmod +x "$target_root/scripts/agent-ops-tool.py"
