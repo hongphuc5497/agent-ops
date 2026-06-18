@@ -1,8 +1,19 @@
 {
-  "name": "agent-ops",
+  "name": "@hongphuc5497/agent-ops",
   "version": "0.1.0",
   "description": "Repo-native operating protocol for AI coding agents.",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/hongphuc5497/agent-ops#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hongphuc5497/agent-ops.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hongphuc5497/agent-ops/issues"
+  },
   "bin": {
     "agent-ops": "bin/agent-ops.js",
     "ao": "bin/agent-ops.js"
@@ -33,8 +44,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node tests/package-cli.test.js && node tests/kanban-data.test.js && node tests/kanban-server.test.js && bash -n scripts/*.sh && python3 -m py_compile scripts/agent-ops-tool.py && ./scripts/agent-ops-check.sh",
-    "pack:check": "npm pack --dry-run"
+    "test": "node tests/package-cli.test.js && node tests/upgrade.test.js && node tests/kanban-data.test.js && node tests/kanban-server.test.js && bash -n scripts/*.sh && python3 -m py_compile scripts/agent-ops-tool.py && ./scripts/agent-ops-check.sh",
+    "pack:check": "npm pack --dry-run",
+    "prepublishOnly": "npm test"
   },
   "engines": {
     "node": ">=20"

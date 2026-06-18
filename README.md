@@ -10,9 +10,12 @@ localhost-only server when you ask for it.
 ## 5-Minute Start
 
 ```bash
-# Seed into an existing repo
+# Optional: install globally so `agent-ops` / `ao` are on your PATH
+npm install -g @hongphuc5497/agent-ops
+
+# Seed into an existing repo (npx works without a global install too)
 cd /path/to/your-project
-npx agent-ops init
+npx @hongphuc5497/agent-ops init
 
 # Check it works
 agent-ops check
@@ -142,9 +145,9 @@ agent-ops check
 ```bash
 # Seed into your project
 cd ~/my-project
-npx agent-ops init                              # install protocol files
-npx agent-ops install claude                    # teach Claude
-npx agent-ops install codex                     # teach Codex
+npx @hongphuc5497/agent-ops init                              # install protocol files
+npx @hongphuc5497/agent-ops install claude                    # teach Claude
+npx @hongphuc5497/agent-ops install codex                     # teach Codex
 
 # Start a task — any agent now checks this first
 agent-ops start "add dark mode" --owner Claude

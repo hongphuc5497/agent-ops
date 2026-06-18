@@ -13,3 +13,4 @@ __pycache__/
 
 # Brainstorm / session scratch artifacts.
 .superpowers/
+.gstack/
