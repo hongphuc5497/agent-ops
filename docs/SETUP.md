@@ -9,14 +9,21 @@ a localhost server you start on demand.
 
 ```bash
 cd /path/to/your-existing-project
-npx agent-ops init
+npx @hongphuc5497/agent-ops init
+```
+
+Prefer a global install? Then the `agent-ops` and `ao` commands are on your PATH:
+
+```bash
+npm install -g @hongphuc5497/agent-ops
+agent-ops init
 ```
 
 This seeds Agent Ops into the current repo. You can also pass an explicit
 target:
 
 ```bash
-npx agent-ops init /path/to/your-existing-project
+npx @hongphuc5497/agent-ops init /path/to/your-existing-project
 ```
 
 ## 2. Verify It Works (30 seconds)
@@ -116,6 +123,33 @@ bounded sidecar work — they don't edit the active concern.
 
 For the current support matrix, see [Supported Integrations](supported-integrations.md).
 
+## Upgrading an Existing Install
+
+When a new Agent Ops release ships fixes or new commands (for example the kanban
+board needs `kanban-snapshot` in `scripts/agent-ops-tool.py`), refresh a repo
+that was initialized with an older version:
+
+```bash
+cd /path/to/your-existing-project
+npx @hongphuc5497/agent-ops upgrade            # or: agent-ops upgrade /path/to/project
+```
+
+Upgrade re-copies **only the tooling** — `scripts/*`, `integrations/*`,
+`.ai/protocol.md`, schemas, workflows, templates, and the `.github/workflows`.
+It **never overwrites your project content**: `TASK.md`, `DECISIONS.md`, and the
+runtime state under `.ai/state/` are preserved exactly as-is (a missing
+generated file is seeded, an existing one is left untouched). It also keeps
+`.ai/` in `.gitignore`.
+
+```bash
+npx @hongphuc5497/agent-ops upgrade --dry-run  # preview what would change first
+agent-ops check                  # confirm the refreshed repo is healthy
+```
+
+Use `upgrade` instead of `init --force`: `--force` regenerates `TASK.md` and
+`DECISIONS.md` from defaults, which would clobber your real decisions and active
+task.
+
 ## Optional Kanban Board
 
 ```bash
@@ -152,3 +186,8 @@ Add your own integration template. It's a markdown file + one case in
 **Q: Can I customize the protocol?**
 Yes. Edit `.ai/protocol.md`, `ROUTING.md`, and `DECISIONS.md`. The bridge
 reads the file system — no compiled state to rebuild.
+
+**Q: How do I update an existing install to a newer release?**
+Run `npx @hongphuc5497/agent-ops upgrade` in the repo. It refreshes only the tooling and
+leaves `TASK.md`, `DECISIONS.md`, and `.ai/state/` untouched. See
+[Upgrading an Existing Install](#upgrading-an-existing-install).

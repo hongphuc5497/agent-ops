@@ -11,6 +11,7 @@ function usage() {
 
 Usage:
   agent-ops init [target] [--dry-run] [--force]
+  agent-ops upgrade [target] [--dry-run]
   agent-ops install <integration> [--dry-run]
   agent-ops status
   agent-ops route <description>
@@ -26,6 +27,7 @@ Usage:
 
 Examples:
   npx agent-ops init
+  npx agent-ops upgrade
   npx agent-ops install codex
   agent-ops kanban
   agent-ops status
@@ -96,6 +98,15 @@ switch (command) {
   case 'init': {
     const target = args[0] && !args[0].startsWith('-') ? args.shift() : '.';
     runBash(path.join(packageRoot, 'scripts', 'init-repo.sh'), [target, ...args]);
+    break;
+  }
+  case 'upgrade': {
+    const target = args[0] && !args[0].startsWith('-') ? args.shift() : '.';
+    runBash(path.join(packageRoot, 'scripts', 'init-repo.sh'), [
+      target,
+      '--upgrade',
+      ...args,
+    ]);
     break;
   }
   case 'install':

@@ -98,7 +98,7 @@ Both repos passed the check suite immediately after seeding. The full task cycle
 ```bash
 # Seed Agent Ops into your repo
 cd /path/to/your-project
-npx agent-ops init
+npx @hongphuc5497/agent-ops init
 
 # Install agent integration (Codex, OpenCode, etc.)
 agent-ops install codex

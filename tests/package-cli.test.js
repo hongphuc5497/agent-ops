@@ -32,7 +32,8 @@ function readPackageJson() {
 
 function testPackageMetadata() {
   const pkg = readPackageJson();
-  assert.equal(pkg.name, 'agent-ops');
+  assert.equal(pkg.name, '@hongphuc5497/agent-ops');
+  assert.equal(pkg.publishConfig.access, 'public');
   assert.equal(pkg.bin['agent-ops'], 'bin/agent-ops.js');
   assert.equal(pkg.bin.ao, 'bin/agent-ops.js');
   assert.ok(pkg.files.includes('bin/agent-ops.js'));

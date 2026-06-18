@@ -6,7 +6,7 @@ shell commands. Here's how to wire it into each agent in 30 seconds.
 ## The Pattern (Same for All)
 
 ```
-1. Seed the protocol     →  npx agent-ops init
+1. Seed the protocol     →  npx @hongphuc5497/agent-ops init
 2. Teach your agent      →  agent-ops install <agent>
 3. Agent reads state     →  agent-ops status
 4. Agent locks a task    →  agent-ops start "task" --owner <agent>
@@ -20,6 +20,17 @@ To see the current supported agents:
 ```bash
 agent-ops install list
 ```
+
+Already installed on an older release? Refresh the tooling in place without
+touching your `TASK.md`/`DECISIONS.md`:
+
+```bash
+npx @hongphuc5497/agent-ops upgrade            # re-copies scripts, integrations, protocol, workflows
+npx @hongphuc5497/agent-ops upgrade --dry-run  # preview first
+```
+
+Use `upgrade` rather than `init --force` — `--force` regenerates `TASK.md` and
+`DECISIONS.md` from defaults and would overwrite your real content.
 
 Agent Ops keeps install setup and live coordination separate. The install
 template teaches an agent the protocol; `TASK.md`, file claims, handoffs, and
@@ -165,7 +176,7 @@ the checklist for adding a new agent.
 ```bash
 # 1. Seed Agent Ops
 cd /path/to/your-repo
-npx agent-ops init
+npx @hongphuc5497/agent-ops init
 
 # 2. Install all agent integrations
 agent-ops install claude
