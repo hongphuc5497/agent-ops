@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
@@ -7,6 +8,14 @@ const { spawnSync } = require('node:child_process');
 const packageRoot = path.resolve(__dirname, '..');
 const repoRoot = process.cwd();
 const staticRoot = path.join(packageRoot, 'web', 'kanban');
+
+// Per-process CSRF token. Generated once at startup, injected into index.html,
+// and required as the `x-csrf-token` header on every mutating request. Defends
+// against drive-by POSTs from any page the user happens to load — loopback
+// binding alone does not, because a malicious page can still fetch 127.0.0.1.
+const CSRF_TOKEN = crypto.randomBytes(32).toString('hex');
+const CSRF_PLACEHOLDER = '__AGENT_OPS_CSRF__';
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 function parseArgs(argv) {
   const options = { port: 4783, open: true };
@@ -147,7 +156,16 @@ function serveStatic(req, res) {
     '.html': 'text/html; charset=utf-8',
     '.js': 'text/javascript; charset=utf-8',
   };
-  const body = fs.readFileSync(filePath);
+  // Inject the per-process CSRF token into HTML so the kanban JS can read it
+  // from <meta name="csrf-token"> and send it on every mutating request. Other
+  // static assets pass through untouched.
+  let body;
+  if (ext === '.html') {
+    const html = fs.readFileSync(filePath, 'utf8').replace(CSRF_PLACEHOLDER, CSRF_TOKEN);
+    body = Buffer.from(html, 'utf8');
+  } else {
+    body = fs.readFileSync(filePath);
+  }
   res.writeHead(200, {
     'content-type': types[ext] || 'application/octet-stream',
     'content-length': body.length,
@@ -271,6 +289,16 @@ async function main() {
       sendJson(res, 403, { ok: false, error: 'forbidden: non-loopback host' });
       return;
     }
+    // CSRF check on mutating /api/* calls: the kanban UI gets the token
+    // injected into the HTML and sends it as `x-csrf-token`. A drive-by POST
+    // from a malicious page has no way to read the token, so it gets rejected.
+    if (req.url.startsWith('/api/') && !SAFE_METHODS.has(req.method)) {
+      const presented = req.headers['x-csrf-token'];
+      if (typeof presented !== 'string' || presented !== CSRF_TOKEN) {
+        sendJson(res, 403, { ok: false, error: 'forbidden: csrf token missing or invalid' });
+        return;
+      }
+    }
     if (req.url.startsWith('/api/')) {
       handleApi(req, res);
     } else {
@@ -282,7 +310,9 @@ async function main() {
     const address = server.address();
     const url = `http://127.0.0.1:${address.port}`;
     if (process.env.AGENT_OPS_TEST_JSON === '1') {
-      process.stdout.write(`${JSON.stringify({ ok: true, url, repo: repoRoot })}\n`);
+      process.stdout.write(
+        `${JSON.stringify({ ok: true, url, repo: repoRoot, csrf: CSRF_TOKEN })}\n`,
+      );
     } else {
       process.stdout.write(`Agent Ops Kanban: ${url}\n`);
     }

@@ -72,10 +72,23 @@ function clearError(target) {
   target.textContent = '';
 }
 
+function csrfToken() {
+  const meta = document.querySelector('meta[name="csrf-token"]');
+  return meta ? meta.getAttribute('content') || '' : '';
+}
+
 async function requestJson(url, options = {}) {
+  const headers = {
+    'content-type': 'application/json',
+    ...(options.headers || {}),
+  };
+  const method = (options.method || 'GET').toUpperCase();
+  if (method !== 'GET' && method !== 'HEAD') {
+    headers['x-csrf-token'] = csrfToken();
+  }
   const response = await fetch(url, {
-    headers: { 'content-type': 'application/json' },
     ...options,
+    headers,
   });
   const payload = await response.json();
   if (!response.ok || payload.ok === false) {
