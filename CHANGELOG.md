@@ -3,6 +3,10 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.3.1 — 2026-06-20
+
+Smoke-test of the new tag-driven release workflow ([#6](https://github.com/hongphuc5497/agent-ops/pull/6)). No behavior changes from 0.3.0 — this release exists to verify that pushing a `v*.*.*` tag publishes to npm via Trusted Publishing (OIDC) and updates the GitHub release in lockstep. If you're already on 0.3.0, there's nothing to upgrade for.
+
 ## 0.3.0 — 2026-06-20
 
 Milestone 2: Onboarding velocity. Shaves the README's 5-minute quick start
