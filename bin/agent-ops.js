@@ -22,6 +22,7 @@ Usage:
   agent-ops finish done|parked|killed [options]
   agent-ops kanban [--port <port>] [--no-open]
   agent-ops check
+  agent-ops doctor
   agent-ops version
   agent-ops help
 
@@ -120,6 +121,7 @@ switch (command) {
   case 'delegate':
   case 'finish':
   case 'check':
+  case 'doctor':
     runBash(requireInitializedRepo('ao'), [command, ...args]);
     break;
   case 'kanban': {
