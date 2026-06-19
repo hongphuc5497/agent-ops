@@ -3,6 +3,40 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.3.0 — 2026-06-20
+
+Milestone 2: Onboarding velocity. Shaves the README's 5-minute quick start
+to a single command and gives new users a guided way to learn the protocol
+without risking real code.
+
+### Added
+
+- **`agent-ops init --interactive`** — picks agents to install and seeds an
+  optional tutorial task in one shot. Replaces the previous chain of
+  `init` + N × `install` + manual exploration.
+- **`agent-ops tutorial`** — drops a guided demo task into `.ai/tasks/` and
+  sets it as the active task. The task markdown walks through `claim`,
+  `delegate`, and `finish` on fake paths so the user exercises the real
+  commands without touching real code. Refuses if a task is already
+  active.
+- **Tutorial source** at `integrations/tutorial/first-task.md`, shipped
+  with the npm package via the existing `integrations/` glob.
+- **Reads-and-writes matrix** in `docs/supported-integrations.md` —
+  explicit per-agent contract for what gets read, written, and never
+  written. This is the boundary that makes Agent Ops a coordination tool
+  instead of a chaos tool.
+
+### Tests
+
+- `tests/tutorial.test.js` — `agent-ops tutorial` creates the active task,
+  the markdown matches the bundled content, the command refuses on an
+  uninitialized repo or when another task is already active.
+- `tests/interactive-init.test.js` — drives the interactive prompts via
+  stdin, confirms both chosen agents get installed (via assertions on
+  `AGENTS.md` / `CLAUDE.md`), confirms the tutorial is seeded when
+  requested and skipped when declined, and confirms unknown agent names
+  are rejected.
+
 ## 0.2.0 — 2026-06-19
 
 Milestone 1: Reliability hardening. Closes the concurrency, validation, and

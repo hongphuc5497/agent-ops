@@ -1,6 +1,6 @@
 {
   "name": "@hongphuc5497/agent-ops",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Repo-native operating protocol for AI coding agents.",
   "license": "MIT",
   "publishConfig": {
@@ -44,7 +44,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node tests/package-cli.test.js && node tests/upgrade.test.js && node tests/kanban-data.test.js && node tests/kanban-server.test.js && node tests/locking.test.js && node tests/doctor.test.js && node tests/csrf.test.js && bash -n scripts/*.sh && python3 -m py_compile scripts/agent-ops-tool.py && ./scripts/agent-ops-check.sh",
+    "test": "node tests/package-cli.test.js && node tests/upgrade.test.js && node tests/kanban-data.test.js && node tests/kanban-server.test.js && node tests/locking.test.js && node tests/doctor.test.js && node tests/csrf.test.js && node tests/tutorial.test.js && node tests/interactive-init.test.js && bash -n scripts/*.sh && python3 -m py_compile scripts/agent-ops-tool.py && ./scripts/agent-ops-check.sh",
     "pack:check": "npm pack --dry-run",
     "prepublishOnly": "npm test"
   },
