@@ -8,8 +8,22 @@ __pycache__/
 .antigravitycli/
 .gemini/
 
-# Agent Ops working directory — created/managed by agent-ops at runtime.
-.ai/
+# Agent Ops working directory — runtime state is local-only. We ignore the
+# directory's contents, not the directory itself, so the source files below
+# can be re-included with `!` patterns (git can't un-ignore a file whose
+# parent directory is itself ignored).
+.ai/*
+
+# Source files shipped via npm `files` MUST be tracked so CI can publish them.
+# They live inside .ai/ to mirror the on-disk layout that agent-ops init
+# produces in target repos.
+!.ai/protocol.md
+!.ai/schema/
+.ai/schema/.*
+!.ai/templates/
+.ai/templates/.*
+!.ai/workflows/
+.ai/workflows/.*
 
 # Brainstorm / session scratch artifacts.
 .superpowers/
