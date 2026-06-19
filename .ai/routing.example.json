@@ -1,0 +1,100 @@
+{
+  "$comment": "Per-repo routing rules. Copy this file to `.ai/routing.json` to opt in. The rules reproduce the built-in defaults plus a custom 'security' rule as an example. Edit freely — see docs/routing.md for the full schema.",
+  "rules": [
+    {
+      "name": "ci-failure",
+      "when": {
+        "any": [
+          {"keyword": "ci"},
+          {"keyword": "github action"},
+          {"keyword": "workflow failed"},
+          {"keyword": "check failed"}
+        ]
+      },
+      "route": {
+        "type": "ci-failure",
+        "owner": "Codex",
+        "advisor": "GitHub Actions logs, Augment",
+        "workflow": ".ai/workflows/ci-failure.md",
+        "verification": "reproduce failing check locally, patch, rerun matching command"
+      }
+    },
+    {
+      "name": "debugging",
+      "when": {
+        "any": [
+          {"keyword": "bug"},
+          {"keyword": "debug"},
+          {"keyword": "failure"},
+          {"keyword": "failing"},
+          {"keyword": "error"},
+          {"keyword": "regression"},
+          {"keyword": "fix"}
+        ]
+      },
+      "route": {
+        "type": "debugging",
+        "owner": "Codex",
+        "advisor": "Augment",
+        "workflow": ".ai/workflows/debugging.md",
+        "verification": "reproduce failure, add regression or minimal repro, rerun failing command"
+      }
+    },
+    {
+      "name": "review",
+      "when": {
+        "any": [
+          {"keyword": "review"},
+          {"keyword": "critique"},
+          {"keyword": "scope"},
+          {"keyword": "product"},
+          {"keyword": "positioning"}
+        ]
+      },
+      "route": {
+        "type": "review",
+        "owner": "OpenClaw",
+        "advisor": "Codex for implementation facts",
+        "workflow": ".ai/workflows/review.md",
+        "verification": "recommend continue, park, or kill with evidence"
+      }
+    },
+    {
+      "name": "experiment",
+      "when": {
+        "any": [
+          {"keyword": "experiment"},
+          {"keyword": "spike"},
+          {"keyword": "prototype"},
+          {"keyword": "try"}
+        ]
+      },
+      "route": {
+        "type": "experiment",
+        "owner": "Codex",
+        "advisor": "OpenClaw",
+        "workflow": ".ai/workflows/experimentation.md",
+        "verification": "time box, kill date, continue evidence"
+      }
+    },
+    {
+      "name": "security",
+      "$comment": "Example custom rule — security tasks get extra rigor and a different reviewer. Delete or edit to taste.",
+      "when": {
+        "any": [
+          {"keyword": "security"},
+          {"keyword": "vulnerability"},
+          {"keyword": "cve"},
+          {"regex": "(?i)\\bauth(n|z)?\\b"}
+        ]
+      },
+      "route": {
+        "type": "security",
+        "owner": "Codex",
+        "advisor": "OpenClaw for threat modeling",
+        "workflow": ".ai/workflows/feature.md",
+        "verification": "threat model, write failing test against the vulnerable path, patch, prove fix"
+      }
+    }
+  ]
+}
