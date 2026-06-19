@@ -5,21 +5,37 @@ Releases are automated. Push a `v<semver>` tag and the
 publishes to npm with the correct dist-tag, and creates the matching
 GitHub release with notes from [CHANGELOG.md](CHANGELOG.md).
 
-## One-time setup
+## One-time setup — npm Trusted Publishing (no secrets)
 
-The workflow needs one secret on the repository.
+This package publishes via npm's [Trusted Publishing](https://docs.npmjs.com/trusted-publishers)
+flow. The workflow mints a short-lived OIDC token from GitHub's identity
+provider on every run; npm validates it against the package's trusted-publisher
+config. **No long-lived `NPM_TOKEN` secret is stored anywhere** — that's the
+whole point.
 
-1. Generate an npm **Automation** token (does not prompt for 2FA in CI):
-   <https://www.npmjs.com/settings/hongphuc5497/tokens/new>
-   — Type: **Automation** — Scope: **Read and Publish** for
-   `@hongphuc5497/agent-ops`.
-2. Add it as the `NPM_TOKEN` repo secret:
-   ```bash
-   gh secret set NPM_TOKEN
-   # paste the token when prompted
-   ```
+Configure the trusted publisher once on npmjs.com:
 
-`GITHUB_TOKEN` is provided automatically by Actions; no setup needed.
+1. Open the package settings:
+   <https://www.npmjs.com/package/@hongphuc5497/agent-ops/access>
+2. Scroll to **Publishing access** → **Trusted Publisher** → **Add publisher**.
+3. Pick **GitHub Actions** and fill in:
+   - **Repository owner:** `hongphuc5497`
+   - **Repository name:** `agent-ops`
+   - **Workflow filename:** `release.yml`
+   - **Environment name:** *(leave blank — we don't gate on environments)*
+4. Save.
+
+That's it. `GITHUB_TOKEN` is provided automatically by Actions; nothing else
+to configure.
+
+### Why no token?
+
+- Tokens leak. OIDC tokens are minted per-job, expire in minutes, and never
+  touch your secret store.
+- 2FA on your npm account doesn't break CI publishes anymore — OIDC bypasses
+  the 2FA prompt the way Automation tokens used to, but without the long-lived
+  credential.
+- Revoking access is one click on the npm settings page; no secret to rotate.
 
 ## Cutting a release
 
@@ -48,7 +64,8 @@ there, automation handles it:
    - **`previous`** if the tag's version is lower (backfill / patch on
      an older minor)
    - **`next`** if the version has a pre-release suffix (e.g. `0.4.0-rc.1`)
-5. `npm publish --access public --tag <name>`
+5. `npm publish --access public --tag <name>` — authenticated via OIDC,
+   no token needed
 6. Creates or updates the GitHub release with notes extracted from
    CHANGELOG.md via [scripts/extract-changelog.sh](scripts/extract-changelog.sh)
 7. Marks the GitHub release as `latest` only when the npm dist-tag was
