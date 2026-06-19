@@ -56,6 +56,14 @@ agent-ops doctor               # diagnostics if anything looks off
 The tutorial runs the actual coordination loop — claim, delegate, finish — on
 a fake task so you learn the commands without risking real code.
 
+## Routing tasks to the right agent
+
+Built-in routing matches keywords like `bug` / `review` / `experiment` to a
+default owner + workflow. To override per-repo (e.g., always route to
+Claude, or add a `security` category), drop a `.ai/routing.json` file. See
+[docs/routing.md](routing.md) for the schema; `agent-ops init` ships a copy
+of `.ai/routing.example.json` you can adapt.
+
 List the same support surface from the shell:
 
 ```bash

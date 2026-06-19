@@ -3,6 +3,54 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.4.0 — 2026-06-20
+
+Milestone 4: Smarter routing. Closes the weakest gap in the protocol surface
+— the hardcoded English-only keyword table that decided which agent owned
+every new task. Per-repo overrides are now an opt-in JSON file; existing
+repos see zero behavior change.
+
+### Added
+
+- **`.ai/routing.json`** (opt-in) — per-repo routing rules. First match wins;
+  unmatched descriptions fall through to the built-in keyword routes, so
+  rules never make routing *worse* than the defaults. Match types in this
+  release: `keyword` (case-insensitive substring) and `regex` (Python
+  `re.search`). Combinator: `any:`. Partial route overrides supported —
+  a rule that only sets `owner` keeps the default `workflow`,
+  `verification`, and `advisor` fields.
+- **`.ai/routing.example.json`** — annotated sample shipped via the npm
+  package and copied into target repos by `agent-ops init`. Reproduces
+  the built-in routes verbatim plus a custom "security" rule as a
+  starting point.
+- **[docs/routing.md](docs/routing.md)** — schema reference, validation
+  errors, worked examples, what's deferred to a later release.
+- **Structural validator** for the new file — surfaces specific problems
+  with a `remedy` hint pointing at recovery, following the M1 validator
+  pattern.
+
+### Changed
+
+- `infer_route()` is now config-then-fallback. The previous hardcoded
+  routing logic is preserved verbatim in `_hardcoded_route()` for the
+  fallback path.
+- `TOOL_VERSION` bumped to 0.4.0.
+
+### Tests
+
+- `tests/routing.test.js` covers 8 cases: no file → hardcoded fallback,
+  keyword match wins, regex match wins, no rule matches → fallback,
+  partial override merges with hardcoded default, malformed JSON →
+  typed error with remedy hint, invalid schema → validation problems
+  list, rule order matters (first match wins).
+
+### Deferred to M4.1
+
+- `--route llm` mode for LLM-classified routing
+- `all:` / `not:` combinators (schema-compatible additions)
+- `agent-ops route add-rule` CLI for managing rules without hand-editing
+- Routing history audit log
+
 ## 0.3.1 — 2026-06-20
 
 Smoke-test of the new tag-driven release workflow ([#6](https://github.com/hongphuc5497/agent-ops/pull/6)). No behavior changes from 0.3.0 — this release exists to verify that pushing a `v*.*.*` tag publishes to npm via Trusted Publishing (OIDC) and updates the GitHub release in lockstep. If you're already on 0.3.0, there's nothing to upgrade for.

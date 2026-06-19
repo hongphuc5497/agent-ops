@@ -12,6 +12,7 @@ const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '..');
 const tool = path.join(root, 'scripts', 'agent-ops-tool.py');
 const ao = path.join(root, 'scripts', 'ao');
+const EXPECTED_VERSION = require(path.join(root, 'package.json')).version;
 
 function makeRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ao-doctor-'));
@@ -35,7 +36,7 @@ function testDoctorReturnsExpectedShape() {
 
   assert.equal(typeof payload.ok, 'boolean');
   assert.ok(payload.agent_ops, 'agent_ops section');
-  assert.equal(payload.agent_ops.tool_version, '0.2.0');
+  assert.equal(payload.agent_ops.tool_version, EXPECTED_VERSION);
   assert.equal(typeof payload.agent_ops.repo_initialized, 'boolean');
   assert.equal(typeof payload.agent_ops.repo_root, 'string');
 
@@ -71,7 +72,7 @@ function testAoWrapperRoutesDoctor() {
   // command was recognized and produced valid JSON.
   assert.ok(result.stdout.startsWith('{'), `ao doctor stdout: ${result.stdout}`);
   const payload = JSON.parse(result.stdout);
-  assert.equal(payload.agent_ops.tool_version, '0.2.0');
+  assert.equal(payload.agent_ops.tool_version, EXPECTED_VERSION);
 }
 
 testDoctorReturnsExpectedShape();

@@ -170,7 +170,8 @@ agent-ops check
 4. ✓ Package & Distribute (v0.1.0)
 5. ✓ Reliability hardening — locking, atomic writes, CSRF, doctor (v0.2.0)
 6. ✓ Onboarding velocity — interactive init, tutorial, reads/writes matrix (v0.3.0)
-7. ⏳ MCP server — make Agent Ops a first-class tool surface (v0.4.0, next)
+7. ✓ Smarter routing — per-repo `.ai/routing.json` overrides (v0.4.0) — see [docs/routing.md](docs/routing.md)
+8. ⏳ MCP server — make Agent Ops a first-class tool surface (v0.5.0, next)
 
 ## Demo
 

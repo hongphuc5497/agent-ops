@@ -18,6 +18,7 @@ __pycache__/
 # They live inside .ai/ to mirror the on-disk layout that agent-ops init
 # produces in target repos.
 !.ai/protocol.md
+!.ai/routing.example.json
 !.ai/schema/
 .ai/schema/.*
 !.ai/templates/

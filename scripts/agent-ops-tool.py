@@ -38,10 +38,11 @@ TASKS_DIR = ROOT / ".ai" / "tasks"
 ACTIVE_TASK = STATE_DIR / "active-task.json"
 CLAIMS_FILE = STATE_DIR / "file-claims.json"
 HANDOFFS_FILE = STATE_DIR / "handoffs.jsonl"
+ROUTING_FILE = ROOT / ".ai" / "routing.json"
 STATE_LOCK = STATE_DIR / ".lock"
 TASK_MD = ROOT / "TASK.md"
 TASK_ID_RE = re.compile(r"^[0-9]{8}-[0-9]{6}-[a-z0-9-]+$")
-TOOL_VERSION = "0.2.0"
+TOOL_VERSION = "0.4.0"
 
 
 def now() -> str:
@@ -189,6 +190,62 @@ def validate_handoff(event: Any) -> list[str]:
             problems.append(f"handoff.{key} must be a non-empty string")
     if "files" in event and not isinstance(event["files"], list):
         problems.append("handoff.files must be an array")
+    return problems
+
+
+def validate_routing(payload: Any) -> list[str]:
+    """Validate the per-repo `.ai/routing.json` schema.
+
+    Returns a list of human-readable problems (empty = ok). This is the
+    contract for per-repo routing overrides; if anything in the file is
+    wrong we want to surface specific, actionable errors rather than
+    silently fall through to the hardcoded routes (which would mask the
+    user's customization).
+    """
+    if not isinstance(payload, dict):
+        return ["routing.json must be a JSON object"]
+    rules = payload.get("rules")
+    if not isinstance(rules, list):
+        return ["routing.json must contain a 'rules' array"]
+    problems: list[str] = []
+    for index, rule in enumerate(rules):
+        prefix = f"rules[{index}]"
+        if not isinstance(rule, dict):
+            problems.append(f"{prefix} must be an object")
+            continue
+        if not isinstance(rule.get("name"), str) or not rule["name"].strip():
+            problems.append(f"{prefix}.name must be a non-empty string")
+        when = rule.get("when")
+        if not isinstance(when, dict):
+            problems.append(f"{prefix}.when must be an object")
+        else:
+            any_clause = when.get("any")
+            if not isinstance(any_clause, list) or not any_clause:
+                problems.append(f"{prefix}.when.any must be a non-empty array")
+            else:
+                for m_index, matcher in enumerate(any_clause):
+                    m_prefix = f"{prefix}.when.any[{m_index}]"
+                    if not isinstance(matcher, dict):
+                        problems.append(f"{m_prefix} must be an object")
+                        continue
+                    has_keyword = isinstance(matcher.get("keyword"), str) and matcher["keyword"]
+                    has_regex = isinstance(matcher.get("regex"), str) and matcher["regex"]
+                    if not (has_keyword or has_regex):
+                        problems.append(
+                            f"{m_prefix} must specify 'keyword' or 'regex' as a non-empty string"
+                        )
+                    if has_regex:
+                        try:
+                            re.compile(matcher["regex"])
+                        except re.error as exc:
+                            problems.append(f"{m_prefix}.regex is invalid: {exc}")
+        route = rule.get("route")
+        if not isinstance(route, dict):
+            problems.append(f"{prefix}.route must be an object")
+        else:
+            for field in ("owner", "workflow", "verification", "advisor", "type"):
+                if field in route and not isinstance(route[field], str):
+                    problems.append(f"{prefix}.route.{field} must be a string")
     return problems
 
 
@@ -474,7 +531,9 @@ def command_status(_: argparse.Namespace) -> None:
     )
 
 
-def infer_route(description: str) -> dict[str, str]:
+def _hardcoded_route(description: str) -> dict[str, str]:
+    """Built-in fallback routes. Preserved verbatim from v0.3.x so repos
+    without `.ai/routing.json` see zero behavior change."""
     text = description.lower()
     if any(word in text for word in ["ci", "github action", "workflow failed", "check failed"]):
         return {
@@ -515,6 +574,90 @@ def infer_route(description: str) -> dict[str, str]:
         "workflow": ".ai/workflows/feature.md",
         "verification": "targeted tests, lint, build, or browser check as appropriate",
     }
+
+
+def load_routing_rules() -> list[dict[str, Any]]:
+    """Read and validate `.ai/routing.json`. Returns the rules list, or
+    [] if the file doesn't exist. Emits a typed error and exits non-zero
+    when the file is present but malformed — we'd rather fail loud than
+    silently fall back to defaults and have the user wondering why their
+    custom rule isn't applied.
+    """
+    if not ROUTING_FILE.exists():
+        return []
+    payload = read_json(ROUTING_FILE, {"rules": []})
+    problems = validate_routing(payload)
+    if problems:
+        emit(
+            {
+                "ok": False,
+                "error": ".ai/routing.json failed validation",
+                "problems": problems,
+                "remedy": "fix the listed problems in .ai/routing.json, or delete the file "
+                          "to fall back to the built-in routes",
+            },
+            1,
+        )
+    return payload["rules"]
+
+
+def _matches(matcher: dict[str, Any], text_lower: str, text_original: str) -> bool:
+    """Apply one matcher (a `keyword` or `regex` clause) to a description.
+
+    Keyword matches are case-insensitive substring; regex matches use
+    `re.search` against the original text so users keep full control of
+    case-sensitivity via flags inside their pattern.
+    """
+    if "keyword" in matcher and matcher["keyword"]:
+        return matcher["keyword"].lower() in text_lower
+    if "regex" in matcher and matcher["regex"]:
+        try:
+            return bool(re.search(matcher["regex"], text_original))
+        except re.error:
+            # validate_routing already rejects unparseable regexes; if we
+            # somehow got here with a bad pattern, treat it as no-match.
+            return False
+    return False
+
+
+def match_rule(rule: dict[str, Any], description: str) -> bool:
+    """True iff `description` matches the rule's `when` clause. Only the
+    `any:` combinator is supported in v0.4.0 — additional combinators
+    (`all`, `not`) can be added without breaking the schema."""
+    when = rule.get("when") or {}
+    any_clause = when.get("any") or []
+    text_lower = description.lower()
+    return any(_matches(m, text_lower, description) for m in any_clause)
+
+
+def infer_route(description: str) -> dict[str, str]:
+    """Pick a route for a task description.
+
+    Two-stage: per-repo `.ai/routing.json` rules first (in order, first
+    match wins), then the built-in keyword fallback. A matching rule's
+    `route` block is merged on top of the built-in default for the same
+    type so partial overrides work — e.g., a rule that only sets `owner`
+    keeps the default workflow/verification fields.
+    """
+    rules = load_routing_rules()
+    for rule in rules:
+        if match_rule(rule, description):
+            # Start from a sensible default so the user can override just
+            # the fields they care about. The default is the hardcoded
+            # route for the same description, so behavior is "extend or
+            # override" rather than "replace and lose fields."
+            merged = dict(_hardcoded_route(description))
+            override = rule.get("route") or {}
+            for key, value in override.items():
+                if isinstance(value, str) and value:
+                    merged[key] = value
+            # The rule's `name` becomes the route's `type` if the user
+            # didn't supply one explicitly. This lets `agent-ops doctor`
+            # and downstream tooling identify which rule fired.
+            if "type" not in override:
+                merged["type"] = rule.get("name", merged.get("type", "custom"))
+            return merged
+    return _hardcoded_route(description)
 
 
 def command_route(args: argparse.Namespace) -> None:

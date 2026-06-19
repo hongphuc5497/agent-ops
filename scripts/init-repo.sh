@@ -75,6 +75,7 @@ copy_files=(
   ".ai/templates/task.md"
   ".ai/templates/decision.md"
   ".ai/templates/project-score.md"
+  ".ai/routing.example.json"
   "integrations/README.md"
   "integrations/codex/AGENTS.template.md"
   "integrations/claude/CLAUDE.template.md"
