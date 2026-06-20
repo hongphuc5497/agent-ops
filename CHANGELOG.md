@@ -3,6 +3,18 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.5.1 — 2026-06-20
+
+Docs-only release. Every `npx @hongphuc5497/agent-ops` and
+`npm install -g @hongphuc5497/agent-ops` example in `README.md`,
+`docs/SETUP.md`, and `docs/plug-and-play.md` now uses the explicit
+`@latest` dist-tag suffix. Equivalent semantics; bypasses npx's local
+cache and signals intent more clearly to readers who copy-paste the
+quick start.
+
+No code, no behavior change. Cut as a patch release so the npm
+package page reflects the updated install instructions immediately.
+
 ## 0.5.0 — 2026-06-20
 
 **Breaking layout change.** Four Agent Ops top-level entries moved into
