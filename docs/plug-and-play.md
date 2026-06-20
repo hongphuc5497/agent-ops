@@ -6,7 +6,7 @@ shell commands. Here's how to wire it into each agent in 30 seconds.
 ## The Pattern (Same for All)
 
 ```
-1. Seed the protocol     →  npx @hongphuc5497/agent-ops init
+1. Seed the protocol     →  npx @hongphuc5497/agent-ops@latest init
 2. Teach your agent      →  agent-ops install <agent>
 3. Agent reads state     →  agent-ops status
 4. Agent locks a task    →  agent-ops start "task" --owner <agent>
@@ -25,8 +25,8 @@ Already installed on an older release? Refresh the tooling in place without
 touching your `.ai/TASK.md`/`.ai/DECISIONS.md`:
 
 ```bash
-npx @hongphuc5497/agent-ops upgrade            # re-copies scripts, integrations, protocol, workflows
-npx @hongphuc5497/agent-ops upgrade --dry-run  # preview first
+npx @hongphuc5497/agent-ops@latest upgrade            # re-copies scripts, integrations, protocol, workflows
+npx @hongphuc5497/agent-ops@latest upgrade --dry-run  # preview first
 ```
 
 Use `upgrade` rather than `init --force` — `--force` regenerates `.ai/TASK.md` and
@@ -176,7 +176,7 @@ the checklist for adding a new agent.
 ```bash
 # 1. Seed Agent Ops
 cd /path/to/your-repo
-npx @hongphuc5497/agent-ops init
+npx @hongphuc5497/agent-ops@latest init
 
 # 2. Install all agent integrations
 agent-ops install claude

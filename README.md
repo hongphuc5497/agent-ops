@@ -11,18 +11,18 @@ localhost-only server when you ask for it.
 
 ```bash
 # One command: install, pick your agents, learn the protocol via a guided task
-npx @hongphuc5497/agent-ops init --interactive
+npx @hongphuc5497/agent-ops@latest init --interactive
 ```
 
 Or step by step:
 
 ```bash
 # Optional: install globally so `agent-ops` / `ao` are on your PATH
-npm install -g @hongphuc5497/agent-ops
+npm install -g @hongphuc5497/agent-ops@latest
 
 # Seed into an existing repo (npx works without a global install too)
 cd /path/to/your-project
-npx @hongphuc5497/agent-ops init
+npx @hongphuc5497/agent-ops@latest init
 
 # Check it works
 agent-ops check
@@ -179,13 +179,13 @@ agent-ops check
 ```bash
 # One command: install, pick agents, seed a tutorial task
 cd ~/my-project
-npx @hongphuc5497/agent-ops init --interactive
+npx @hongphuc5497/agent-ops@latest init --interactive
 
 # Or do it step by step
-npx @hongphuc5497/agent-ops init                              # install protocol files
-npx @hongphuc5497/agent-ops install claude                    # teach Claude
-npx @hongphuc5497/agent-ops install codex                     # teach Codex
-npx @hongphuc5497/agent-ops tutorial                          # learn the loop
+npx @hongphuc5497/agent-ops@latest init                              # install protocol files
+npx @hongphuc5497/agent-ops@latest install claude                    # teach Claude
+npx @hongphuc5497/agent-ops@latest install codex                     # teach Codex
+npx @hongphuc5497/agent-ops@latest tutorial                          # learn the loop
 
 # Start a real task — any agent now checks this first
 agent-ops start "add dark mode" --owner Claude

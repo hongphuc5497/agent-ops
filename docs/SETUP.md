@@ -9,13 +9,13 @@ a localhost server you start on demand.
 
 ```bash
 cd /path/to/your-existing-project
-npx @hongphuc5497/agent-ops init
+npx @hongphuc5497/agent-ops@latest init
 ```
 
 Prefer a global install? Then the `agent-ops` and `ao` commands are on your PATH:
 
 ```bash
-npm install -g @hongphuc5497/agent-ops
+npm install -g @hongphuc5497/agent-ops@latest
 agent-ops init
 ```
 
@@ -23,7 +23,7 @@ This seeds Agent Ops into the current repo. You can also pass an explicit
 target:
 
 ```bash
-npx @hongphuc5497/agent-ops init /path/to/your-existing-project
+npx @hongphuc5497/agent-ops@latest init /path/to/your-existing-project
 ```
 
 ## 2. Verify It Works (30 seconds)
@@ -131,7 +131,7 @@ that was initialized with an older version:
 
 ```bash
 cd /path/to/your-existing-project
-npx @hongphuc5497/agent-ops upgrade            # or: agent-ops upgrade /path/to/project
+npx @hongphuc5497/agent-ops@latest upgrade            # or: agent-ops upgrade /path/to/project
 ```
 
 Upgrade re-copies **only the tooling** — `scripts/*`, `.ai/integrations/templates/*`,
@@ -142,7 +142,7 @@ generated file is seeded, an existing one is left untouched). It also keeps
 `.ai/` in `.gitignore`.
 
 ```bash
-npx @hongphuc5497/agent-ops upgrade --dry-run  # preview what would change first
+npx @hongphuc5497/agent-ops@latest upgrade --dry-run  # preview what would change first
 agent-ops check                  # confirm the refreshed repo is healthy
 ```
 
@@ -188,6 +188,6 @@ Yes. Edit `.ai/protocol.md`, `.ai/ROUTING.md`, and `.ai/DECISIONS.md`. The bridg
 reads the file system — no compiled state to rebuild.
 
 **Q: How do I update an existing install to a newer release?**
-Run `npx @hongphuc5497/agent-ops upgrade` in the repo. It refreshes only the tooling and
+Run `npx @hongphuc5497/agent-ops@latest upgrade` in the repo. It refreshes only the tooling and
 leaves `.ai/TASK.md`, `.ai/DECISIONS.md`, and `.ai/state/` untouched. See
 [Upgrading an Existing Install](#upgrading-an-existing-install).
