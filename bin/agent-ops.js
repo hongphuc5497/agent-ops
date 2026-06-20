@@ -247,7 +247,7 @@ function seedTutorial(targetAbs) {
     process.stderr.write('agent-ops: target repo not initialized\n');
     return 1;
   }
-  const tutorialSource = path.join(packageRoot, 'integrations', 'tutorial', 'first-task.md');
+  const tutorialSource = path.join(packageRoot, '.ai', 'integrations', 'templates', 'tutorial', 'first-task.md');
   if (!fs.existsSync(tutorialSource)) {
     process.stderr.write(`agent-ops: tutorial content missing at ${tutorialSource}\n`);
     return 1;

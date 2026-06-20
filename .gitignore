@@ -20,6 +20,10 @@ __pycache__/
 !.ai/protocol.md
 !.ai/ROUTING.md
 !.ai/routing.example.json
+!.ai/integrations/
+.ai/integrations/.*
+!.ai/integrations/templates/
+.ai/integrations/templates/.*
 !.ai/schema/
 .ai/schema/.*
 !.ai/templates/

@@ -47,6 +47,12 @@ function simulateLegacyLayout(repo, taskContent, decisionsContent, routingConten
   fs.renameSync(path.join(repo, '.ai/TASK.md'), path.join(repo, 'TASK.md'));
   fs.renameSync(path.join(repo, '.ai/DECISIONS.md'), path.join(repo, 'DECISIONS.md'));
   fs.renameSync(path.join(repo, '.ai/ROUTING.md'), path.join(repo, 'ROUTING.md'));
+  // v0.5.0 also moves integrations/ from the repo root into .ai/integrations/templates/.
+  // Simulate that legacy layout too — move the templates dir back to the root.
+  fs.renameSync(
+    path.join(repo, '.ai/integrations/templates'),
+    path.join(repo, 'integrations'),
+  );
   if (taskContent !== undefined) fs.writeFileSync(path.join(repo, 'TASK.md'), taskContent);
   if (decisionsContent !== undefined) fs.writeFileSync(path.join(repo, 'DECISIONS.md'), decisionsContent);
   if (routingContent !== undefined) fs.writeFileSync(path.join(repo, 'ROUTING.md'), routingContent);
@@ -69,15 +75,21 @@ function testUpgradeMigratesAndPreservesContent() {
   assert.match(upgrade.stdout, /migrated TASK\.md to \.ai\/TASK\.md/);
   assert.match(upgrade.stdout, /migrated ROUTING\.md to \.ai\/ROUTING\.md/);
   assert.match(upgrade.stdout, /migrated DECISIONS\.md to \.ai\/DECISIONS\.md/);
+  assert.match(upgrade.stdout, /migrated integrations\/ to \.ai\/integrations\/templates\//);
 
   // Old root paths are gone.
   assert.ok(!fs.existsSync(path.join(repo, 'TASK.md')), 'root TASK.md gone');
   assert.ok(!fs.existsSync(path.join(repo, 'ROUTING.md')), 'root ROUTING.md gone');
   assert.ok(!fs.existsSync(path.join(repo, 'DECISIONS.md')), 'root DECISIONS.md gone');
+  assert.ok(!fs.existsSync(path.join(repo, 'integrations')), 'root integrations/ gone');
   // New paths exist.
   assert.ok(fs.existsSync(path.join(repo, '.ai/TASK.md')), '.ai/TASK.md present');
   assert.ok(fs.existsSync(path.join(repo, '.ai/ROUTING.md')), '.ai/ROUTING.md present');
   assert.ok(fs.existsSync(path.join(repo, '.ai/DECISIONS.md')), '.ai/DECISIONS.md present');
+  assert.ok(
+    fs.existsSync(path.join(repo, '.ai/integrations/templates/codex/AGENTS.template.md')),
+    '.ai/integrations/templates/ present with content',
+  );
 
   // User-data content preserved verbatim across the migration + refresh.
   assert.equal(
@@ -115,8 +127,8 @@ function testDoctorFlagsLegacyLayout() {
   assert.equal(payload.ok, false, 'doctor must flag legacy layout as not-ok');
   assert.deepEqual(
     payload.legacy_layout.files_at_root.sort(),
-    ['DECISIONS.md', 'ROUTING.md', 'TASK.md'],
-    'all three legacy files listed',
+    ['DECISIONS.md', 'ROUTING.md', 'TASK.md', 'integrations/'],
+    'all four legacy paths listed',
   );
   assert.match(payload.legacy_layout.remedy, /agent-ops upgrade/);
 }
@@ -127,9 +139,14 @@ function testFreshInitProducesAiLayout() {
   assert.ok(fs.existsSync(path.join(repo, '.ai/TASK.md')), '.ai/TASK.md');
   assert.ok(fs.existsSync(path.join(repo, '.ai/ROUTING.md')), '.ai/ROUTING.md');
   assert.ok(fs.existsSync(path.join(repo, '.ai/DECISIONS.md')), '.ai/DECISIONS.md');
+  assert.ok(
+    fs.existsSync(path.join(repo, '.ai/integrations/templates/codex/AGENTS.template.md')),
+    '.ai/integrations/templates/codex/AGENTS.template.md from fresh init',
+  );
   assert.ok(!fs.existsSync(path.join(repo, 'TASK.md')), 'no root TASK.md');
   assert.ok(!fs.existsSync(path.join(repo, 'ROUTING.md')), 'no root ROUTING.md');
   assert.ok(!fs.existsSync(path.join(repo, 'DECISIONS.md')), 'no root DECISIONS.md');
+  assert.ok(!fs.existsSync(path.join(repo, 'integrations')), 'no root integrations/');
 }
 
 function testDryRunMigrationDoesNotMove() {
@@ -141,9 +158,15 @@ function testDryRunMigrationDoesNotMove() {
     'dry-run upgrade',
   );
   assert.match(result.stdout, /would move TASK\.md to \.ai\/TASK\.md/);
+  assert.match(result.stdout, /would move integrations\/ to \.ai\/integrations\/templates\//);
   // Files NOT moved by dry-run.
   assert.ok(fs.existsSync(path.join(repo, 'TASK.md')), 'root TASK.md still there after dry-run');
+  assert.ok(fs.existsSync(path.join(repo, 'integrations')), 'root integrations/ still there after dry-run');
   assert.ok(!fs.existsSync(path.join(repo, '.ai/TASK.md')), 'no .ai/TASK.md from dry-run');
+  assert.ok(
+    !fs.existsSync(path.join(repo, '.ai/integrations/templates')),
+    'no .ai/integrations/templates/ from dry-run',
+  );
 }
 
 testUpgradeMigratesAndPreservesContent();

@@ -13,7 +13,7 @@ const root = path.resolve(__dirname, '..');
 const node = process.execPath;
 const cli = path.join(root, 'bin', 'agent-ops.js');
 const initScript = path.join(root, 'scripts', 'init-repo.sh');
-const tutorialSource = path.join(root, 'integrations', 'tutorial', 'first-task.md');
+const tutorialSource = path.join(root, '.ai', 'integrations', 'templates', 'tutorial', 'first-task.md');
 
 function makeInitializedRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ao-tutorial-'));

@@ -171,7 +171,7 @@ agent-ops check
 5. ✓ Reliability hardening — locking, atomic writes, CSRF, doctor (v0.2.0)
 6. ✓ Onboarding velocity — interactive init, tutorial, reads/writes matrix (v0.3.0)
 7. ✓ Smarter routing — per-repo `.ai/routing.json` overrides (v0.4.0) — see [docs/routing.md](docs/routing.md)
-8. ✓ Consolidated layout — `TASK.md` / `ROUTING.md` / `DECISIONS.md` moved into `.ai/`; `agent-ops upgrade` auto-migrates (v0.5.0)
+8. ✓ Consolidated layout — `TASK.md` / `ROUTING.md` / `DECISIONS.md` and `integrations/` moved into `.ai/`; `agent-ops upgrade` auto-migrates (v0.5.0)
 9. ⏳ MCP server — make Agent Ops a first-class tool surface (v0.6.0, next)
 
 ## Demo

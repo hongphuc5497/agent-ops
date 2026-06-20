@@ -81,7 +81,7 @@ Before adding a new agent, answer these separately:
 
 Then make the smallest file-first change:
 
-1. Add `integrations/<agent>/...` instructions.
+1. Add `.ai/integrations/templates/<agent>/...` instructions.
 2. Add one case to `scripts/install-integration.sh`.
 3. Add the copied file to `scripts/init-repo.sh` if seeded repos need it.
 4. Update this matrix and the quick reference in `docs/plug-and-play.md`.

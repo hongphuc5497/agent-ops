@@ -31,7 +31,7 @@
     "scripts/task-start.sh",
     "scripts/task-status.sh",
     "scripts/weekly-review.sh",
-    "integrations/",
+    ".ai/integrations/templates/",
     ".ai/protocol.md",
     ".ai/ROUTING.md",
     ".ai/routing.example.json",

@@ -5,8 +5,9 @@ All notable changes to Agent Ops are documented here. Versions follow
 
 ## 0.5.0 — 2026-06-20
 
-**Breaking layout change.** `TASK.md`, `ROUTING.md`, and `DECISIONS.md` moved
-from the repo root into `.ai/`. `agent-ops upgrade` auto-migrates existing
+**Breaking layout change.** Four Agent Ops top-level entries moved into
+`.ai/`: `TASK.md`, `ROUTING.md`, `DECISIONS.md`, and the entire
+`integrations/` directory. `agent-ops upgrade` auto-migrates existing
 v0.4.x repos — content is preserved verbatim and `git mv` is used so file
 history follows the rename.
 
@@ -47,14 +48,15 @@ remedy line pointing at `agent-ops upgrade`.
 | `TASK.md` | `.ai/TASK.md` | User data — preserved on upgrade |
 | `ROUTING.md` | `.ai/ROUTING.md` | Shipped content — refreshed on upgrade |
 | `DECISIONS.md` | `.ai/DECISIONS.md` | User data — preserved on upgrade |
+| `integrations/` | `.ai/integrations/templates/` | Shipped content — resolves the "two `integrations/`" naming collision (templates live next to runtime instances under one parent dir) |
 
 ### Added
 
 - **Auto-migration** in `agent-ops upgrade` (`scripts/init-repo.sh`):
-  detects legacy root files, uses `git mv` when the file is tracked
-  (history follows the rename), falls back to plain `mv` otherwise.
-  Dry-run mode reports the moves it would make without touching the
-  repo.
+  detects legacy root files **and** the legacy `integrations/`
+  directory, uses `git mv` when tracked (history follows the rename),
+  falls back to plain `mv` otherwise. Dry-run mode reports the moves
+  it would make without touching the repo.
 - **`doctor.legacy_layout`** field — lists any of the three files still
   at root, with a `remedy` line telling the user how to migrate. Repos
   with legacy files at root are no longer reported as `ok: true`.

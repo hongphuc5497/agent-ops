@@ -197,7 +197,7 @@ agent-ops check
 Agent Ops integration is a template file + one case in `install-integration.sh`.
 To add a new agent:
 
-1. Create `integrations/<agent>/<config>.template.md`
+1. Create `.ai/integrations/templates/<agent>/<config>.template.md`
 2. Add a case to `scripts/install-integration.sh` that writes it to the right
    config file for that agent (CLAUDE.md, AGENTS.md, .cursorrules, etc.)
 3. Add the template path to `scripts/init-repo.sh` copy list

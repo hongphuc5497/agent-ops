@@ -118,7 +118,7 @@ bounded sidecar work — they don't edit the active concern.
 | `scripts/agent-ops-tool.py` | JSON bridge for agent consumption |
 | `scripts/init-repo.sh` | Seed protocol into other repos |
 | `scripts/install-integration.sh` | Teach each agent the protocol |
-| `integrations/` | Templates for Claude, Codex, OpenCode, Augment, OpenClaw, Hermes |
+| `.ai/integrations/templates/` | Templates for Claude, Codex, OpenCode, Augment, OpenClaw, Hermes |
 | `.github/workflows/` | CI checks and failure notifications |
 
 For the current support matrix, see [Supported Integrations](supported-integrations.md).
@@ -134,7 +134,7 @@ cd /path/to/your-existing-project
 npx @hongphuc5497/agent-ops upgrade            # or: agent-ops upgrade /path/to/project
 ```
 
-Upgrade re-copies **only the tooling** — `scripts/*`, `integrations/*`,
+Upgrade re-copies **only the tooling** — `scripts/*`, `.ai/integrations/templates/*`,
 `.ai/protocol.md`, schemas, workflows, templates, and the `.github/workflows`.
 It **never overwrites your project content**: `.ai/TASK.md`, `.ai/DECISIONS.md`, and the
 runtime state under `.ai/state/` are preserved exactly as-is (a missing
