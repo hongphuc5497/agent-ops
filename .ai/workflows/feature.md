@@ -19,7 +19,7 @@ Verification:
 4. Add regression tests first when behavior is risky.
 5. Implement smallest useful version.
 6. Run matching tests/build/browser check.
-7. Update `DECISIONS.md` if the workflow rule changed.
+7. Update `.ai/DECISIONS.md` if the workflow rule changed.
 8. Finish task.
 
 ## Default Prompt

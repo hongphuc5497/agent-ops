@@ -38,7 +38,7 @@ function testPackageMetadata() {
   assert.equal(pkg.bin.ao, 'bin/agent-ops.js');
   assert.ok(pkg.files.includes('bin/agent-ops.js'));
   assert.ok(pkg.files.includes('scripts/ao'));
-  assert.ok(pkg.files.includes('integrations/'));
+  assert.ok(pkg.files.includes('.ai/integrations/templates/'));
   assert.ok(pkg.files.includes('.ai/protocol.md'));
   assert.ok(pkg.files.includes('.ai/schema/'));
   assert.ok(pkg.files.includes('.ai/templates/'));
@@ -84,7 +84,7 @@ function testPackContainsProtocolFiles() {
     'scripts/ao',
     'scripts/init-repo.sh',
     'scripts/install-integration.sh',
-    'integrations/codex/AGENTS.template.md',
+    '.ai/integrations/templates/codex/AGENTS.template.md',
     'docs/supported-integrations.md',
     'web/kanban/index.html',
     'web/kanban/styles.css',

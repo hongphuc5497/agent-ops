@@ -15,7 +15,7 @@ function makeRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ao-lock-'));
   fs.mkdirSync(path.join(dir, '.ai', 'tasks', 'archive'), { recursive: true });
   fs.mkdirSync(path.join(dir, '.ai', 'state'), { recursive: true });
-  fs.writeFileSync(path.join(dir, 'TASK.md'), '# Active Task\n');
+  fs.writeFileSync(path.join(dir, '.ai', 'TASK.md'), '# Active Task\n');
   fs.writeFileSync(path.join(dir, '.ai', 'state', 'file-claims.json'), '{ "claims": [] }\n');
   fs.writeFileSync(path.join(dir, '.ai', 'state', 'handoffs.jsonl'), '');
   return dir;

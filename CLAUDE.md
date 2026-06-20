@@ -6,7 +6,7 @@ protocol.
 
 Before editing:
 
-1. Read `.ai/protocol.md`, `TASK.md`, and `ROUTING.md`.
+1. Read `.ai/protocol.md`, `.ai/TASK.md`, and `.ai/ROUTING.md`.
 2. Run `scripts/agent-ops-tool.py status` (or `scripts/ao status`).
 3. If no task is active and the user requested implementation, start one with
    `scripts/agent-ops-tool.py start`.
@@ -28,5 +28,5 @@ Before finishing:
    or explicitly park/kill the task.
 
 Note: Claude Code can be the brain or a delegated worker. When acting as the
-brain, follow ROUTING.md. When delegated, only edit claimed files and return
+brain, follow `.ai/ROUTING.md`. When delegated, only edit claimed files and return
 with changed files + verification.

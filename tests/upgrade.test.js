@@ -75,8 +75,8 @@ function testUpgradePreservesContentAndRefreshesTool() {
   assert.equal(toolHasKanban(repo), true, 'real init seeds the kanban tool');
 
   fs.writeFileSync(path.join(repo, 'scripts', 'agent-ops-tool.py'), OLD_TOOL_STUB);
-  fs.writeFileSync(path.join(repo, 'DECISIONS.md'), CUSTOM_DECISIONS);
-  fs.writeFileSync(path.join(repo, 'TASK.md'), CUSTOM_TASK);
+  fs.writeFileSync(path.join(repo, '.ai/DECISIONS.md'), CUSTOM_DECISIONS);
+  fs.writeFileSync(path.join(repo, '.ai/TASK.md'), CUSTOM_TASK);
   assert.equal(toolHasKanban(repo), false, 'stub tool lacks kanban-snapshot');
 
   // Old tool cannot serve the board.
@@ -90,8 +90,8 @@ function testUpgradePreservesContentAndRefreshesTool() {
   const upgrade = run(node, [cli, 'upgrade', repo], { cwd: root });
   assertOk(upgrade, 'agent-ops upgrade');
   assert.match(upgrade.stdout, /Agent Ops upgraded in /);
-  assert.match(upgrade.stdout, /preserved DECISIONS\.md/);
-  assert.match(upgrade.stdout, /preserved TASK\.md/);
+  assert.match(upgrade.stdout, /preserved \.ai\/DECISIONS\.md/);
+  assert.match(upgrade.stdout, /preserved \.ai\/TASK\.md/);
 
   // Tool regained the kanban commands.
   assert.equal(toolHasKanban(repo), true, 'upgrade re-copies the current tool');
@@ -104,14 +104,14 @@ function testUpgradePreservesContentAndRefreshesTool() {
 
   // Customized project content survived untouched.
   assert.equal(
-    fs.readFileSync(path.join(repo, 'DECISIONS.md'), 'utf8'),
+    fs.readFileSync(path.join(repo, '.ai/DECISIONS.md'), 'utf8'),
     CUSTOM_DECISIONS,
-    'DECISIONS.md preserved'
+    '.ai/DECISIONS.md preserved'
   );
   assert.equal(
-    fs.readFileSync(path.join(repo, 'TASK.md'), 'utf8'),
+    fs.readFileSync(path.join(repo, '.ai/TASK.md'), 'utf8'),
     CUSTOM_TASK,
-    'TASK.md preserved'
+    '.ai/TASK.md preserved'
   );
 
   // The upgraded repo passes its own health check.
@@ -126,19 +126,19 @@ function testUpgradePreservesContentAndRefreshesTool() {
 function testUpgradeDryRunIsReadOnly() {
   const repo = makeRepo();
   assertOk(run('bash', [initScript, repo]), 'init repo for dry-run');
-  fs.writeFileSync(path.join(repo, 'DECISIONS.md'), CUSTOM_DECISIONS);
+  fs.writeFileSync(path.join(repo, '.ai/DECISIONS.md'), CUSTOM_DECISIONS);
 
   const result = run('bash', [initScript, repo, '--upgrade', '--dry-run']);
   assertOk(result, 'upgrade --dry-run');
   assert.match(result.stdout, /would copy scripts\/agent-ops-tool\.py/);
-  assert.match(result.stdout, /would preserve DECISIONS\.md/);
+  assert.match(result.stdout, /would preserve \.ai\/DECISIONS\.md/);
   assert.match(result.stdout, /Agent Ops upgraded in /);
 
   // Nothing was written.
   assert.equal(
-    fs.readFileSync(path.join(repo, 'DECISIONS.md'), 'utf8'),
+    fs.readFileSync(path.join(repo, '.ai/DECISIONS.md'), 'utf8'),
     CUSTOM_DECISIONS,
-    'dry-run did not rewrite DECISIONS.md'
+    'dry-run did not rewrite .ai/DECISIONS.md'
   );
 }
 

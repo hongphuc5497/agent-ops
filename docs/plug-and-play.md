@@ -22,18 +22,18 @@ agent-ops install list
 ```
 
 Already installed on an older release? Refresh the tooling in place without
-touching your `TASK.md`/`DECISIONS.md`:
+touching your `.ai/TASK.md`/`.ai/DECISIONS.md`:
 
 ```bash
 npx @hongphuc5497/agent-ops upgrade            # re-copies scripts, integrations, protocol, workflows
 npx @hongphuc5497/agent-ops upgrade --dry-run  # preview first
 ```
 
-Use `upgrade` rather than `init --force` — `--force` regenerates `TASK.md` and
-`DECISIONS.md` from defaults and would overwrite your real content.
+Use `upgrade` rather than `init --force` — `--force` regenerates `.ai/TASK.md` and
+`.ai/DECISIONS.md` from defaults and would overwrite your real content.
 
 Agent Ops keeps install setup and live coordination separate. The install
-template teaches an agent the protocol; `TASK.md`, file claims, handoffs, and
+template teaches an agent the protocol; `.ai/TASK.md`, file claims, handoffs, and
 verification decide what the agent may do during active work.
 
 The optional board is just another command-backed view:
@@ -67,7 +67,7 @@ file on every session start and follows the protocol automatically.
 # Agent Ops Rules for Claude Code
 
 Before editing:
-1. Read .ai/protocol.md, TASK.md, and ROUTING.md.
+1. Read .ai/protocol.md, .ai/TASK.md, and .ai/ROUTING.md.
 2. Run scripts/agent-ops-tool.py status
 3. If no task is active, start one
 4. Claim files before editing
@@ -140,7 +140,7 @@ navigation — find relevant files, symbols, callers, tests, and risk surfaces.
 ```text
 Find the code surfaces relevant to this Agent Ops task.
 Task: <active task title>
-Active owner: <from TASK.md>
+Active owner: <from .ai/TASK.md>
 ...
 ```
 
@@ -197,7 +197,7 @@ agent-ops check
 Agent Ops integration is a template file + one case in `install-integration.sh`.
 To add a new agent:
 
-1. Create `integrations/<agent>/<config>.template.md`
+1. Create `.ai/integrations/templates/<agent>/<config>.template.md`
 2. Add a case to `scripts/install-integration.sh` that writes it to the right
    config file for that agent (CLAUDE.md, AGENTS.md, .cursorrules, etc.)
 3. Add the template path to `scripts/init-repo.sh` copy list

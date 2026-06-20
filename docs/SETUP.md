@@ -56,7 +56,7 @@ Each agent now reads the protocol on session start.
 
 Agent Ops separates install setup from live coordination. Installing an
 integration only writes the instruction file that agent reads. Ownership,
-handoffs, and verification still flow through `TASK.md`, `ROUTING.md`, and
+handoffs, and verification still flow through `.ai/TASK.md`, `.ai/ROUTING.md`, and
 `./scripts/ao`.
 
 ## 5. Run Your First Task (60 seconds)
@@ -118,7 +118,7 @@ bounded sidecar work — they don't edit the active concern.
 | `scripts/agent-ops-tool.py` | JSON bridge for agent consumption |
 | `scripts/init-repo.sh` | Seed protocol into other repos |
 | `scripts/install-integration.sh` | Teach each agent the protocol |
-| `integrations/` | Templates for Claude, Codex, OpenCode, Augment, OpenClaw, Hermes |
+| `.ai/integrations/templates/` | Templates for Claude, Codex, OpenCode, Augment, OpenClaw, Hermes |
 | `.github/workflows/` | CI checks and failure notifications |
 
 For the current support matrix, see [Supported Integrations](supported-integrations.md).
@@ -134,9 +134,9 @@ cd /path/to/your-existing-project
 npx @hongphuc5497/agent-ops upgrade            # or: agent-ops upgrade /path/to/project
 ```
 
-Upgrade re-copies **only the tooling** — `scripts/*`, `integrations/*`,
+Upgrade re-copies **only the tooling** — `scripts/*`, `.ai/integrations/templates/*`,
 `.ai/protocol.md`, schemas, workflows, templates, and the `.github/workflows`.
-It **never overwrites your project content**: `TASK.md`, `DECISIONS.md`, and the
+It **never overwrites your project content**: `.ai/TASK.md`, `.ai/DECISIONS.md`, and the
 runtime state under `.ai/state/` are preserved exactly as-is (a missing
 generated file is seeded, an existing one is left untouched). It also keeps
 `.ai/` in `.gitignore`.
@@ -146,8 +146,8 @@ npx @hongphuc5497/agent-ops upgrade --dry-run  # preview what would change first
 agent-ops check                  # confirm the refreshed repo is healthy
 ```
 
-Use `upgrade` instead of `init --force`: `--force` regenerates `TASK.md` and
-`DECISIONS.md` from defaults, which would clobber your real decisions and active
+Use `upgrade` instead of `init --force`: `--force` regenerates `.ai/TASK.md` and
+`.ai/DECISIONS.md` from defaults, which would clobber your real decisions and active
 task.
 
 ## Optional Kanban Board
@@ -158,7 +158,7 @@ agent-ops kanban --no-open
 agent-ops kanban --port 4783
 ```
 
-This starts a localhost-only UI for the current repo. It reads `TASK.md`,
+This starts a localhost-only UI for the current repo. It reads `.ai/TASK.md`,
 `.ai/state/*`, `.ai/tasks/*.md`, and task archives, then writes through
 `scripts/agent-ops-tool.py` commands. Use it to create or update tasks, claim
 files on the active task, and finish or park the active task. V1 intentionally
@@ -184,10 +184,10 @@ Add your own integration template. It's a markdown file + one case in
 `install-integration.sh`. See `docs/plug-and-play.md`.
 
 **Q: Can I customize the protocol?**
-Yes. Edit `.ai/protocol.md`, `ROUTING.md`, and `DECISIONS.md`. The bridge
+Yes. Edit `.ai/protocol.md`, `.ai/ROUTING.md`, and `.ai/DECISIONS.md`. The bridge
 reads the file system — no compiled state to rebuild.
 
 **Q: How do I update an existing install to a newer release?**
 Run `npx @hongphuc5497/agent-ops upgrade` in the repo. It refreshes only the tooling and
-leaves `TASK.md`, `DECISIONS.md`, and `.ai/state/` untouched. See
+leaves `.ai/TASK.md`, `.ai/DECISIONS.md`, and `.ai/state/` untouched. See
 [Upgrading an Existing Install](#upgrading-an-existing-install).

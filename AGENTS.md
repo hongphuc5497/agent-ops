@@ -6,11 +6,11 @@ readable, and runnable by one indie developer.
 ## Defaults
 
 - Prefer markdown files and tiny scripts over services, databases, or custom UI.
-- Keep one active task owner in `TASK.md` and `.ai/state/active-task.json`.
+- Keep one active task owner in `.ai/TASK.md` and `.ai/state/active-task.json`.
 - Use `.ai/protocol.md` as the shared protocol for agent integrations.
 - Use `scripts/agent-ops-tool.py` for JSON state when an agent needs a tool call.
 - Do not let multiple agents edit the same concern at the same time.
-- Capture decisions in `DECISIONS.md` before building machinery around them.
+- Capture decisions in `.ai/DECISIONS.md` before building machinery around them.
 - Put speculative ideas in `.ai/parking-lot.md`, not in active workflow docs.
 
 ## Editing Rules
@@ -40,7 +40,7 @@ protocol.
 
 Before editing:
 
-1. Read `.ai/protocol.md`, `TASK.md`, and `ROUTING.md`.
+1. Read `.ai/protocol.md`, `.ai/TASK.md`, and `.ai/ROUTING.md`.
 2. Run `scripts/agent-ops-tool.py status` when available.
 3. If no task is active and the user requested implementation, start one with
    `scripts/agent-ops-tool.py start`.

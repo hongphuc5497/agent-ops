@@ -61,7 +61,7 @@ function makeRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ao-kanban-data-'));
   fs.mkdirSync(path.join(dir, '.ai', 'tasks', 'archive'), { recursive: true });
   fs.mkdirSync(path.join(dir, '.ai', 'state'), { recursive: true });
-  fs.writeFileSync(path.join(dir, 'TASK.md'), '# Active Task\n\nStatus: none\n');
+  fs.writeFileSync(path.join(dir, '.ai/TASK.md'), '# Active Task\n\nStatus: none\n');
   fs.writeFileSync(path.join(dir, '.ai/state/file-claims.json'), '{ "claims": [] }\n');
   fs.writeFileSync(path.join(dir, '.ai/state/handoffs.jsonl'), '');
   return dir;
@@ -163,7 +163,7 @@ In `scripts/agent-ops-tool.py`:
 - Only allow ids matching `^[0-9]{8}-[0-9]{6}-[a-z0-9-]+$`.
 - Locate the task in active state, `.ai/tasks/*.md`, or archive JSON.
 - Update supported fields: title, owner, workflow, verification, files in scope, out of scope.
-- If active, rewrite `.ai/state/active-task.json`, `TASK.md`, and matching task markdown.
+- If active, rewrite `.ai/state/active-task.json`, `.ai/TASK.md`, and matching task markdown.
 - If archived, rewrite archive JSON only.
 - Return the updated task JSON.
 

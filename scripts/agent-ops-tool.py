@@ -33,16 +33,26 @@ except ImportError:  # pragma: no cover - Windows fallback
 
 
 ROOT = Path.cwd()
-STATE_DIR = ROOT / ".ai" / "state"
-TASKS_DIR = ROOT / ".ai" / "tasks"
+AI_DIR = ROOT / ".ai"
+STATE_DIR = AI_DIR / "state"
+TASKS_DIR = AI_DIR / "tasks"
 ACTIVE_TASK = STATE_DIR / "active-task.json"
 CLAIMS_FILE = STATE_DIR / "file-claims.json"
 HANDOFFS_FILE = STATE_DIR / "handoffs.jsonl"
-ROUTING_FILE = ROOT / ".ai" / "routing.json"
+ROUTING_FILE = AI_DIR / "routing.json"
 STATE_LOCK = STATE_DIR / ".lock"
-TASK_MD = ROOT / "TASK.md"
+# v0.5.0 moved these from the repo root into .ai/. The migration paths are
+# checked by doctor() so users with old-layout repos get a clear remedy.
+TASK_MD = AI_DIR / "TASK.md"
+ROUTING_MD = AI_DIR / "ROUTING.md"
+DECISIONS_MD = AI_DIR / "DECISIONS.md"
+INTEGRATIONS_DIR = AI_DIR / "integrations"
+LEGACY_TASK_MD = ROOT / "TASK.md"
+LEGACY_ROUTING_MD = ROOT / "ROUTING.md"
+LEGACY_DECISIONS_MD = ROOT / "DECISIONS.md"
+LEGACY_INTEGRATIONS_DIR = ROOT / "integrations"
 TASK_ID_RE = re.compile(r"^[0-9]{8}-[0-9]{6}-[a-z0-9-]+$")
-TOOL_VERSION = "0.4.0"
+TOOL_VERSION = "0.5.0"
 
 
 def now() -> str:
@@ -441,9 +451,9 @@ def build_task_payload(
 
 def check_payload() -> dict[str, Any]:
     required = [
-        "TASK.md",
-        "ROUTING.md",
-        "DECISIONS.md",
+        ".ai/TASK.md",
+        ".ai/ROUTING.md",
+        ".ai/DECISIONS.md",
         "docs/supported-integrations.md",
         ".ai/protocol.md",
         ".ai/schema/task.schema.json",
@@ -454,8 +464,8 @@ def check_payload() -> dict[str, Any]:
         "scripts/install-integration.sh",
         "scripts/init-repo.sh",
         "scripts/agent-ops-check.sh",
-        "integrations/codex/AGENTS.template.md",
-        "integrations/claude/CLAUDE.template.md",
+        ".ai/integrations/templates/codex/AGENTS.template.md",
+        ".ai/integrations/templates/claude/CLAUDE.template.md",
         ".github/workflows/agent-ops-check.yml",
         ".github/workflows/notify-failure.yml",
         ".github/workflows/stale-task-monitor.yml",
@@ -1041,8 +1051,20 @@ def doctor_payload() -> dict[str, Any]:
         ROOT / ".ai" / "protocol.md"
     ).exists()
 
+    # v0.5.0 moved several things from the repo root into .ai/. Surface
+    # old-layout repos as a typed problem with a one-line remedy so users
+    # know exactly what to do.
+    legacy_layout: list[str] = []
+    for legacy in (LEGACY_TASK_MD, LEGACY_ROUTING_MD, LEGACY_DECISIONS_MD):
+        if legacy.exists():
+            legacy_layout.append(str(legacy.relative_to(ROOT)))
+    if LEGACY_INTEGRATIONS_DIR.is_dir():
+        legacy_layout.append(
+            str(LEGACY_INTEGRATIONS_DIR.relative_to(ROOT)) + "/"
+        )
+
     return {
-        "ok": health["ok"] and not state_problems,
+        "ok": health["ok"] and not state_problems and not legacy_layout,
         "agent_ops": {
             "tool_version": TOOL_VERSION,
             "repo_initialized": repo_initialized,
@@ -1057,6 +1079,14 @@ def doctor_payload() -> dict[str, Any]:
         },
         "health": health,
         "state_problems": state_problems,
+        "legacy_layout": {
+            "files_at_root": legacy_layout,
+            "remedy": (
+                "run `agent-ops upgrade` to migrate them into .ai/ — content is preserved"
+                if legacy_layout
+                else ""
+            ),
+        },
     }
 
 
