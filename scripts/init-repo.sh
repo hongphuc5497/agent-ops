@@ -59,8 +59,47 @@ if ! git -C "$target_root" rev-parse --git-dir >/dev/null 2>&1; then
   echo "proceeding anyway (--force)" >&2
 fi
 
+# v0.5.0 migration: move TASK.md, ROUTING.md, DECISIONS.md from the repo
+# root into .ai/. We only do this in upgrade mode, and only when the file
+# exists at the old path AND not yet at the new one — so re-running is a
+# safe no-op. Content is preserved verbatim; this is just a rename.
+migrate_legacy_layout() {
+  local rel
+  local from
+  local to
+  local migrated=0
+  for rel in TASK.md ROUTING.md DECISIONS.md; do
+    from="$target_root/$rel"
+    to="$target_root/.ai/$rel"
+    if [[ -f "$from" && ! -f "$to" ]]; then
+      if [[ "$dry_run" -eq 1 ]]; then
+        echo "would move $rel to .ai/$rel"
+      else
+        mkdir -p "$target_root/.ai"
+        # Prefer git mv so history follows the file when the repo tracks
+        # the old path. Fall back to plain mv if git refuses (untracked
+        # file, or repo is in a weird state) — the rename still happens.
+        if git -C "$target_root" mv "$rel" ".ai/$rel" 2>/dev/null; then
+          echo "migrated $rel to .ai/$rel (via git mv)"
+        else
+          mv "$from" "$to"
+          echo "migrated $rel to .ai/$rel"
+        fi
+        migrated=1
+      fi
+    fi
+  done
+  if [[ "$migrated" -eq 1 ]]; then
+    echo "note: TASK.md/ROUTING.md/DECISIONS.md moved to .ai/ in v0.5.0; AGENTS.md and CLAUDE.md still live at the repo root"
+  fi
+}
+
+if [[ "$upgrade" -eq 1 ]]; then
+  migrate_legacy_layout
+fi
+
 copy_files=(
-  "ROUTING.md"
+  ".ai/ROUTING.md"
   "docs/supported-integrations.md"
   ".ai/protocol.md"
   ".ai/schema/task.schema.json"
@@ -95,8 +134,8 @@ copy_files=(
 )
 
 generated_files=(
-  "TASK.md"
-  "DECISIONS.md"
+  ".ai/TASK.md"
+  ".ai/DECISIONS.md"
   ".ai/state/file-claims.json"
   ".ai/state/handoffs.jsonl"
 )
@@ -104,7 +143,7 @@ generated_files=(
 get_default_content() {
   local rel="$1"
   case "$rel" in
-    TASK.md)
+    .ai/TASK.md)
       printf '%s\n' \
         "# Active Task" \
         "" \
@@ -125,7 +164,7 @@ get_default_content() {
         "  concern unless ownership is transferred." \
         "- Finish or park the active task before starting another."
       ;;
-    DECISIONS.md)
+    .ai/DECISIONS.md)
       printf '%s\n' \
         "# Decisions" \
         "" \

@@ -63,7 +63,7 @@ The user opens a task in the right drawer and can update:
 - out of scope
 
 For active tasks, updates must synchronize `.ai/state/active-task.json`,
-`TASK.md`, and the matching `.ai/tasks/*.md` record.
+`.ai/TASK.md`, and the matching `.ai/tasks/*.md` record.
 
 ### Claim files
 
@@ -80,7 +80,7 @@ The UI calls the existing finish command. The task moves to `Done`, `Parked`, or
 
 The UI reads these existing files:
 
-- `TASK.md`
+- `.ai/TASK.md`
 - `.ai/state/active-task.json`
 - `.ai/state/file-claims.json`
 - `.ai/state/handoffs.jsonl`

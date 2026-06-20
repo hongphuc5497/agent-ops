@@ -62,8 +62,8 @@ Agents can also use the repo-local `./scripts/ao` wrapper after initialization.
 | File ownership claims | `.ai/state/file-claims.json` | ✓ |
 | Agent handoffs | `.ai/state/handoffs.jsonl` | ✓ |
 | Task records | `.ai/tasks/*.md` + archive JSON | ✓ |
-| Routing rules | `ROUTING.md` | — |
-| Architecture decisions | `DECISIONS.md` | — |
+| Routing rules | `.ai/ROUTING.md` | — |
+| Architecture decisions | `.ai/DECISIONS.md` | — |
 | Shared protocol | `.ai/protocol.md` | — |
 
 ## Agent Integrations
@@ -82,7 +82,7 @@ agent-ops install hermes      # Appends monitor rules
 Repo-local only — no global config mutated.
 
 Install support is different from live coordination. The install script writes
-the files an agent reads; `ROUTING.md`, `TASK.md`, and `ao` define what that
+the files an agent reads; `.ai/ROUTING.md`, `.ai/TASK.md`, and `ao` define what that
 agent may do once work starts. See the [supported integrations matrix](docs/supported-integrations.md).
 
 ## Kanban UI
@@ -171,7 +171,8 @@ agent-ops check
 5. ✓ Reliability hardening — locking, atomic writes, CSRF, doctor (v0.2.0)
 6. ✓ Onboarding velocity — interactive init, tutorial, reads/writes matrix (v0.3.0)
 7. ✓ Smarter routing — per-repo `.ai/routing.json` overrides (v0.4.0) — see [docs/routing.md](docs/routing.md)
-8. ⏳ MCP server — make Agent Ops a first-class tool surface (v0.5.0, next)
+8. ✓ Consolidated layout — `TASK.md` / `ROUTING.md` / `DECISIONS.md` moved into `.ai/`; `agent-ops upgrade` auto-migrates (v0.5.0)
+9. ⏳ MCP server — make Agent Ops a first-class tool surface (v0.6.0, next)
 
 ## Demo
 

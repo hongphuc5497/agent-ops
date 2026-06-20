@@ -18,14 +18,14 @@ installing a daemon. Tools and MCP servers are adapters over the same state.
 
 | File | Purpose | Generated? |
 | --- | --- | --- |
-| `TASK.md` | Human-readable active task lock | yes |
+| `.ai/TASK.md` | Human-readable active task lock | yes |
 | `.ai/state/active-task.json` | Machine-readable active task lock | yes |
 | `.ai/state/file-claims.json` | Machine-readable file ownership claims | yes |
 | `.ai/state/handoffs.jsonl` | Append-only handoff log | yes |
 | `.ai/tasks/*.md` | Task records | yes |
 | `.ai/tasks/archive/*.json` | Finished task summaries | yes |
-| `ROUTING.md` | Human-readable routing rules | no |
-| `DECISIONS.md` | Durable architecture/workflow decisions | no |
+| `.ai/ROUTING.md` | Human-readable routing rules | no |
+| `.ai/DECISIONS.md` | Durable architecture/workflow decisions | no |
 
 ## Agent Contract
 

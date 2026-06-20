@@ -38,11 +38,11 @@ coordination tool instead of a chaos tool.
 
 | Agent | Reads | Writes (when active owner) | Never writes |
 | --- | --- | --- | --- |
-| Codex | `AGENTS.md`, `TASK.md`, `ROUTING.md`, `.ai/state/*` | Anything claimed for the active task, `.ai/state/*` via `ao` commands | Files claimed by another task |
-| Claude Code | `CLAUDE.md`, `TASK.md`, `ROUTING.md`, `.ai/state/*` | Anything claimed for the active task, `.ai/state/*` via `ao` commands | Files claimed by another task |
+| Codex | `AGENTS.md`, `.ai/TASK.md`, `.ai/ROUTING.md`, `.ai/state/*` | Anything claimed for the active task, `.ai/state/*` via `ao` commands | Files claimed by another task |
+| Claude Code | `CLAUDE.md`, `.ai/TASK.md`, `.ai/ROUTING.md`, `.ai/state/*` | Anything claimed for the active task, `.ai/state/*` via `ao` commands | Files claimed by another task |
 | OpenCode | `.ai/integrations/opencode-instructions.md`, the delegated file set | Only the delegated file set, via `ao handoff` return | Anything outside its handoff |
 | Augment | Full repo (read-only by default) | — | Implementation files, `.ai/state/*` |
-| OpenClaw | The plan, the changed diff, `ROUTING.md`, `DECISIONS.md` | `.ai/integrations/openclaw-review.md` only | Implementation files, `.ai/state/*` |
+| OpenClaw | The plan, the changed diff, `.ai/ROUTING.md`, `.ai/DECISIONS.md` | `.ai/integrations/openclaw-review.md` only | Implementation files, `.ai/state/*` |
 | Hermes | `.ai/state/active-task.json`, `.ai/state/handoffs.jsonl` | Notification channels only | Repo files, `.ai/state/*` |
 
 ## How to learn the protocol fast

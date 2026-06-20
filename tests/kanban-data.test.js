@@ -21,7 +21,7 @@ function makeRepo() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ao-kanban-data-'));
   fs.mkdirSync(path.join(dir, '.ai', 'tasks', 'archive'), { recursive: true });
   fs.mkdirSync(path.join(dir, '.ai', 'state'), { recursive: true });
-  fs.writeFileSync(path.join(dir, 'TASK.md'), '# Active Task\n\nStatus: none\n');
+  fs.writeFileSync(path.join(dir, '.ai/TASK.md'), '# Active Task\n\nStatus: none\n');
   fs.writeFileSync(path.join(dir, '.ai/state/file-claims.json'), '{ "claims": [] }\n');
   fs.writeFileSync(path.join(dir, '.ai/state/handoffs.jsonl'), '');
   return dir;

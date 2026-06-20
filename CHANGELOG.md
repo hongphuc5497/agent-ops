@@ -3,6 +3,85 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.5.0 — 2026-06-20
+
+**Breaking layout change.** `TASK.md`, `ROUTING.md`, and `DECISIONS.md` moved
+from the repo root into `.ai/`. `agent-ops upgrade` auto-migrates existing
+v0.4.x repos — content is preserved verbatim and `git mv` is used so file
+history follows the rename.
+
+### Why
+
+The repo root collected Agent Ops files that didn't need to be there. After
+the move, only files that **must** live at the root remain — universally-
+recognized files (`README`, `LICENSE`, `package.json`), and files that
+external tools look for by convention (`AGENTS.md` for Codex, `CLAUDE.md`
+for Claude Code). Everything else now lives in `.ai/`, the working
+directory of the protocol.
+
+### Migration
+
+```bash
+# Existing v0.4.x install
+agent-ops upgrade
+
+# The output now includes "migrated X to .ai/X" lines. Content is preserved.
+# Re-running upgrade is a no-op — the migration is idempotent.
+```
+
+`agent-ops doctor` flags any repo that still has the legacy layout, with a
+remedy line pointing at `agent-ops upgrade`.
+
+### What stays at root
+
+| File | Why |
+|---|---|
+| `AGENTS.md` | Codex convention — looks for it at the root |
+| `CLAUDE.md` | Claude Code convention — looks for it at the root |
+| `README.md`, `LICENSE`, `package.json`, `.gitignore` | Universal |
+
+### What moved into `.ai/`
+
+| Old path | New path | Notes |
+|---|---|---|
+| `TASK.md` | `.ai/TASK.md` | User data — preserved on upgrade |
+| `ROUTING.md` | `.ai/ROUTING.md` | Shipped content — refreshed on upgrade |
+| `DECISIONS.md` | `.ai/DECISIONS.md` | User data — preserved on upgrade |
+
+### Added
+
+- **Auto-migration** in `agent-ops upgrade` (`scripts/init-repo.sh`):
+  detects legacy root files, uses `git mv` when the file is tracked
+  (history follows the rename), falls back to plain `mv` otherwise.
+  Dry-run mode reports the moves it would make without touching the
+  repo.
+- **`doctor.legacy_layout`** field — lists any of the three files still
+  at root, with a `remedy` line telling the user how to migrate. Repos
+  with legacy files at root are no longer reported as `ok: true`.
+- **`tests/migrate.test.js`** — 5 cases covering the migration: full
+  migration with preserved content, idempotent re-runs, doctor flagging,
+  fresh-init layout, and dry-run safety.
+
+### Changed
+
+- `scripts/agent-ops-tool.py`: `TASK_MD`, new `ROUTING_MD`/`DECISIONS_MD`
+  constants, `check_payload` looks at `.ai/` paths, `TOOL_VERSION` →
+  `0.5.0`.
+- `scripts/init-repo.sh`: `copy_files`/`generated_files` point at `.ai/`;
+  `get_default_content` cases renamed.
+- `scripts/agent-ops-check.sh`: `core_files` list updated.
+- `integrations/{codex,claude,opencode}/...`: path references updated so
+  installed `AGENTS.md`/`CLAUDE.md` rules tell each agent to read the
+  new locations.
+- `.gitignore`: `!.ai/ROUTING.md` (shipped content), plus `!.ai/TASK.md`
+  and `!.ai/DECISIONS.md` for repos that commit their own (like this
+  one).
+- Docs across `README.md`, `docs/SETUP.md`, `docs/plug-and-play.md`,
+  `docs/supported-integrations.md`, `docs/kanban/*.md` updated to the
+  new paths.
+- This repo (agent-ops itself) ate its own dog food via `git mv` on
+  `TASK.md`, `ROUTING.md`, `DECISIONS.md`.
+
 ## 0.4.0 — 2026-06-20
 
 Milestone 4: Smarter routing. Closes the weakest gap in the protocol surface

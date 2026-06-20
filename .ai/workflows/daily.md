@@ -20,7 +20,7 @@ Choose from this order:
 
 1. Active customer/user pain.
 2. Broken workflow blocking shipping.
-3. Follow-up from `DECISIONS.md`.
+3. Follow-up from `.ai/DECISIONS.md`.
 4. Highest-scoring experiment.
 5. Parking-lot item only if it beats the current active bet.
 

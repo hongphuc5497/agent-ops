@@ -18,6 +18,7 @@ __pycache__/
 # They live inside .ai/ to mirror the on-disk layout that agent-ops init
 # produces in target repos.
 !.ai/protocol.md
+!.ai/ROUTING.md
 !.ai/routing.example.json
 !.ai/schema/
 .ai/schema/.*
@@ -25,6 +26,12 @@ __pycache__/
 .ai/templates/.*
 !.ai/workflows/
 .ai/workflows/.*
+
+# Project content the agent-ops repo itself maintains — task lock and ADRs.
+# In target repos these are user data and gitignored by default (the user
+# chooses whether to commit). Here we commit them because they're our own.
+!.ai/TASK.md
+!.ai/DECISIONS.md
 
 # Brainstorm / session scratch artifacts.
 .superpowers/

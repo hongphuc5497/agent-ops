@@ -149,7 +149,7 @@ The UI must not invent a separate task database in v1.
 
 Read sources:
 
-- `TASK.md` for visible active task state
+- `.ai/TASK.md` for visible active task state
 - `.ai/state/active-task.json` for active machine state
 - `.ai/state/file-claims.json` for claimed files
 - `.ai/state/handoffs.jsonl` for handoff activity

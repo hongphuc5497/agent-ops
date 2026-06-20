@@ -62,7 +62,7 @@ agent-ops finish done --verification "completed the Agent Ops tutorial"
 ```
 
 The active task closes, claims are released, and the task is archived to
-`.ai/tasks/archive/`. `TASK.md` resets to "no active task."
+`.ai/tasks/archive/`. `.ai/TASK.md` resets to "no active task."
 
 ## What you learned
 
@@ -80,7 +80,7 @@ agent-ops kanban             # open the local task board
 agent-ops doctor             # diagnostic if anything looks off
 ```
 
-For the full protocol, read `.ai/protocol.md` and `ROUTING.md`.
+For the full protocol, read `.ai/protocol.md` and `.ai/ROUTING.md`.
 
 ## Result
 

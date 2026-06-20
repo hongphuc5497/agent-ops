@@ -3,9 +3,9 @@ set -euo pipefail
 
 # Files that are always tracked and must exist in every Agent Ops repo.
 core_files=(
-  "TASK.md"
-  "ROUTING.md"
-  "DECISIONS.md"
+  ".ai/TASK.md"
+  ".ai/ROUTING.md"
+  ".ai/DECISIONS.md"
   "docs/supported-integrations.md"
   "integrations/README.md"
   "integrations/codex/AGENTS.template.md"
