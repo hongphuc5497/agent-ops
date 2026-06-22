@@ -52,7 +52,7 @@ LEGACY_ROUTING_MD = ROOT / "ROUTING.md"
 LEGACY_DECISIONS_MD = ROOT / "DECISIONS.md"
 LEGACY_INTEGRATIONS_DIR = ROOT / "integrations"
 TASK_ID_RE = re.compile(r"^[0-9]{8}-[0-9]{6}-[a-z0-9-]+$")
-TOOL_VERSION = "0.5.2"
+TOOL_VERSION = "0.5.3"
 
 
 def now() -> str:
