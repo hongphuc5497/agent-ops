@@ -40,17 +40,26 @@ to configure.
 ## Cutting a release
 
 ```bash
-# 1. Bump the version in package.json and CHANGELOG.md on a release branch
-git switch -c release/v0.4.0
-node -e "const p=require('./package.json');p.version='0.4.0';require('fs').writeFileSync('./package.json', JSON.stringify(p,null,2)+'\n')"
-# Edit CHANGELOG.md — add a `## 0.4.0 — YYYY-MM-DD` section at the top
+# 1. Bump the version in THREE places on a release branch. They MUST match —
+#    the `doctor` test asserts TOOL_VERSION == package.json version, and the
+#    release workflow runs `npm test` before publishing, so any drift fails the
+#    release. The places:
+#      - package.json                "version"
+#      - scripts/agent-ops-tool.py   TOOL_VERSION
+#      - CHANGELOG.md                 new "## <ver> — YYYY-MM-DD" section at top
+ver=0.4.0
+git switch -c "release/v$ver"
+node -e "const p=require('./package.json');p.version='$ver';require('fs').writeFileSync('./package.json', JSON.stringify(p,null,2)+'\n')"
+node -e "const f='scripts/agent-ops-tool.py',fs=require('fs');fs.writeFileSync(f, fs.readFileSync(f,'utf8').replace(/^TOOL_VERSION = .*/m, 'TOOL_VERSION = \"$ver\"'))"
+# Edit CHANGELOG.md — add a `## $ver — YYYY-MM-DD` section at the top
+npm test   # sanity: includes the doctor test that enforces the version lockstep
 
 # 2. Open a PR. Merge after review.
 
 # 3. From main, tag the merge commit and push
 git switch main && git pull
-git tag -a v0.4.0 -m "v0.4.0"
-git push origin v0.4.0
+git tag -a "v$ver" -m "v$ver"
+git push origin "v$ver"
 ```
 
 That last `git push origin v0.4.0` is what triggers the workflow. From
@@ -58,7 +67,9 @@ there, automation handles it:
 
 1. Checks out the tag
 2. Verifies `package.json` version matches the tag
-3. Runs `npm test`
+3. Runs `npm test` — this is also where a `TOOL_VERSION` ≠ `package.json`
+   mismatch is caught (the `doctor` test), so the publish never happens on a
+   half-bumped release
 4. Resolves the right npm dist-tag:
    - **`latest`** if the tag's version is higher than current `latest`
    - **`previous`** if the tag's version is lower (backfill / patch on
