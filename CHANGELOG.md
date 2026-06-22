@@ -3,6 +3,25 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.5.2 — 2026-06-22
+
+Bug-fix release. `scripts/agent-ops-check.sh` no longer fails when a target
+repo gitignores `.ai/` — the default layout produced by `agent-ops init`.
+
+Previously `.ai/TASK.md`, `.ai/ROUTING.md`, `.ai/DECISIONS.md`, and the
+`.ai/integrations/templates/**` files were listed as unconditional core files,
+so the `Agent Ops Check` GitHub workflow failed on a clean CI checkout with
+`missing required file: .ai/TASK.md` even though those paths are intentionally
+gitignored. They now sit in the `.ai/protocol.md`-gated block: a repo that
+commits its `.ai/` source still gets full validation, while a repo that
+gitignores it (the default) skips the `.ai/` checks and passes.
+
+Added `tests/clean-checkout.test.js`, which extracts the tracked tree with
+`git archive` — exactly what CI checks out — and asserts the check passes, plus
+a negative case proving a committed-but-incomplete `.ai/` still fails.
+
+Run `agent-ops upgrade` in existing repos to pick up the tolerant check.
+
 ## 0.5.1 — 2026-06-20
 
 Docs-only release. Every `npx @hongphuc5497/agent-ops` and
