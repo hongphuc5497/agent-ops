@@ -1,6 +1,6 @@
 {
   "name": "@hongphuc5497/agent-ops",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Repo-native operating protocol for AI coding agents.",
   "license": "MIT",
   "publishConfig": {
