@@ -3,6 +3,20 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## 0.5.3 — 2026-06-22
+
+Bug-fix release. `agent-ops init`/`upgrade` no longer corrupt an existing
+`.ai/` allowlist in a target repo's `.gitignore`.
+
+`ensure_gitignore` only recognized the blanket `.ai/` form, so a repo using the
+v0.5.0 allowlist style (`.ai/*` followed by `!.ai/...` rules to commit some
+`.ai/` source while ignoring runtime state) had a redundant blanket `.ai/`
+appended on upgrade — which re-ignored the very files the `!` rules un-ignore.
+The check now matches both `.ai/` and the `.ai/*` allowlist anchor and leaves an
+allowlisted `.gitignore` untouched. Blanket and missing cases are unchanged.
+
+Added `tests/gitignore.test.js` covering the allowlist, bare, and missing cases.
+
 ## 0.5.2 — 2026-06-22
 
 Bug-fix release. `scripts/agent-ops-check.sh` no longer fails when a target

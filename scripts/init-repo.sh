@@ -291,7 +291,12 @@ write_file() {
 # leaks local paths and workflow metadata, especially in public repos.
 ensure_gitignore() {
   local gi="$target_root/.gitignore"
-  if [[ -f "$gi" ]] && grep -qE '^/?\.ai/?$' "$gi"; then
+  # Already managed? Accept both forms: the blanket `.ai/` (default) AND the
+  # allowlist anchor `.ai/*` used by repos that commit some .ai/ source while
+  # ignoring runtime state (e.g. `.ai/*` followed by `!.ai/...` rules). Matching
+  # only the blanket form here would wrongly append a redundant `.ai/` after an
+  # allowlist, re-ignoring the very files the `!` rules un-ignore.
+  if [[ -f "$gi" ]] && grep -qE '^/?\.ai(/\*?)?$' "$gi"; then
     echo ".gitignore already ignores .ai/"
     return 0
   fi
