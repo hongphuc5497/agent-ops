@@ -3,6 +3,42 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+Claim conflicts are now glob-aware. Previously two agents could claim the same
+files under different spellings — `tests/*` and `tests/foo.test.js` did not
+conflict because the check compared exact strings only. `agent-ops claim` now
+detects overlap when either path pattern matches the other, one is a
+directory prefix of the other, or two globs share a prefix-compatible literal
+stem (`web/kanban/*.js` vs `web/kanban/app.*`). Filesystem-equivalent
+spellings (`./src/foo.ts`, `src/./foo.ts`, `lib/../src/foo.ts`, trailing
+slashes) normalize to the same claim, and a claim on `.` covers the whole
+repo. Divergent globs (`src/a*` vs `src/b*`) stay disjoint. Glob-vs-glob
+detection is a conservative prefix heuristic, not full pattern intersection —
+false positives err toward safety for a lock system.
+
+Hardening from adversarial review (Claude + Codex): matching uses
+`fnmatch.fnmatchcase` so verdicts don't vary by OS case-folding; empty or
+whitespace-only claim paths are rejected before they reach the state file
+(a stored empty path previously failed validation on every later read); and
+the kanban snapshot caps handoffs at the last 20 entries instead of shipping
+the unbounded log on every poll.
+
+Also removed the literal `- TODO` placeholder that `create-task` left under
+Acceptance Criteria in generated task files, matching the `start` template.
+
+Added `tests/claim-overlap.test.js` covering glob-vs-literal, directory-prefix,
+spelling normalization, dotfile safety, disjoint claims, and same-owner
+extension.
+
+Kanban UI: the Claims panel now shows each claim as a card with its owner
+(avatar + name), path chips, and the owning task title (hover shows the claim reason) instead of
+anonymous path chips. A new Handoffs panel shows the five most recent handoffs
+(`from → to` with a timestamp; hover shows the description or acceptance
+criteria) — the snapshot already carried this data but the UI never rendered
+it. Claim-conflict errors in the task drawer now list which owner holds which
+conflicting paths.
+
 ## 0.5.3 — 2026-06-22
 
 Bug-fix release. `agent-ops init`/`upgrade` no longer corrupt an existing
