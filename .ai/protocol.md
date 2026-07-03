@@ -67,8 +67,15 @@ Optional fields:
 
 Stored in `.ai/state/file-claims.json`.
 
-Claims are glob-like strings. They are human-enforced in v0.1 and checked for
-exact duplicate claims by scripts. Deep overlap detection can come later.
+Claims are glob-like strings. Scripts reject overlapping claims: a claim
+conflicts when either path pattern matches the other (`tests/*` vs
+`tests/foo.test.js`), one is a directory prefix of the other (`tests` vs
+`tests/deep/nested.js`), or two globs share a prefix-compatible literal stem
+(`web/kanban/*.js` vs `web/kanban/app.*`). Filesystem-equivalent spellings
+normalize to the same claim (`./tests/`, `tests/`, `lib/../tests`, and
+`tests` are all the same), and a claim on `.` covers the whole repo.
+Divergent globs (`src/a*` vs `src/b*`) stay disjoint — glob-vs-glob is a
+conservative prefix heuristic, not full pattern intersection.
 
 Example:
 

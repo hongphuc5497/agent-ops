@@ -44,7 +44,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node tests/package-cli.test.js && node tests/upgrade.test.js && node tests/clean-checkout.test.js && node tests/gitignore.test.js && node tests/kanban-data.test.js && node tests/kanban-server.test.js && node tests/locking.test.js && node tests/doctor.test.js && node tests/csrf.test.js && node tests/tutorial.test.js && node tests/interactive-init.test.js && node tests/extract-changelog.test.js && node tests/routing.test.js && node tests/migrate.test.js && bash -n scripts/*.sh && python3 -m py_compile scripts/agent-ops-tool.py && ./scripts/agent-ops-check.sh",
+    "test": "node tests/package-cli.test.js && node tests/upgrade.test.js && node tests/clean-checkout.test.js && node tests/gitignore.test.js && node tests/kanban-data.test.js && node tests/kanban-server.test.js && node tests/locking.test.js && node tests/claim-overlap.test.js && node tests/doctor.test.js && node tests/csrf.test.js && node tests/tutorial.test.js && node tests/interactive-init.test.js && node tests/extract-changelog.test.js && node tests/routing.test.js && node tests/migrate.test.js && bash -n scripts/*.sh && python3 -m py_compile scripts/agent-ops-tool.py && ./scripts/agent-ops-check.sh",
     "pack:check": "npm pack --dry-run",
     "prepublishOnly": "npm test"
   },

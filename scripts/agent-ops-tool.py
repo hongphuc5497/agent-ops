@@ -14,9 +14,11 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import fnmatch
 import json
 import os
 import platform
+import posixpath
 import re
 import shutil
 import subprocess
@@ -336,7 +338,7 @@ Verification: {task.get("verification", "")}
 
 ## Acceptance Criteria
 
-- TODO
+-
 
 ## Files In Scope
 
@@ -763,6 +765,68 @@ Risks:
     emit({"ok": True, "task": task})
 
 
+def normalize_claim_path(path: str) -> str:
+    # Collapse `./`, `foo/../`, and duplicate slashes so filesystem-equivalent
+    # spellings (`src/./foo.ts`, `src//foo.ts`) land on the same claim key.
+    # posixpath.normpath leaves glob metacharacters untouched.
+    path = path.strip()
+    if not path:
+        return ""
+    path = posixpath.normpath(path)
+    return path.rstrip("/") if path != "/" else path
+
+
+GLOB_CHARS = set("*?[")
+
+
+def glob_literal_prefix(pattern: str) -> str:
+    for i, ch in enumerate(pattern):
+        if ch in GLOB_CHARS:
+            return pattern[:i]
+    return pattern
+
+
+def claim_paths_overlap(a: str, b: str) -> bool:
+    """Return True when two claim paths could cover the same files.
+
+    Claims are glob-like: literal paths (`src/foo.ts`), globs (`tests/*`),
+    or directories (`tests/` or `tests`). Overlap holds when either pattern
+    matches the other, one is a directory prefix of the other, or — for two
+    glob patterns — their literal prefixes are prefix-compatible (a
+    conservative stand-in for full pattern intersection: it flags
+    `web/kanban/*.js` vs `web/kanban/app.*` while keeping `src/a*` vs
+    `src/b*` disjoint). False positives err toward safety for a lock system.
+    """
+    a = normalize_claim_path(a)
+    b = normalize_claim_path(b)
+    if not a or not b:
+        return False
+    # `.` or `/` claims the whole repo.
+    if a in (".", "/") or b in (".", "/"):
+        return True
+    if a == b:
+        return True
+    # fnmatch's `*` crosses `/`, so `tests/*` also covers `tests/sub/file`.
+    # fnmatchcase keeps matching case-sensitive and slash-literal on every
+    # OS — plain fnmatch folds case on Windows/macOS and would give the
+    # same claims file different verdicts per platform.
+    if fnmatch.fnmatchcase(a, b) or fnmatch.fnmatchcase(b, a):
+        return True
+    # Directory containment: `tests` claims everything under tests/.
+    if a.startswith(b + "/") or b.startswith(a + "/"):
+        return True
+    # Glob-vs-glob: conflict when one literal prefix extends the other.
+    if any(ch in GLOB_CHARS for ch in a) and any(ch in GLOB_CHARS for ch in b):
+        pa, pb = glob_literal_prefix(a), glob_literal_prefix(b)
+        if pa.startswith(pb) or pb.startswith(pa):
+            return True
+    return False
+
+
+def claims_overlap(requested: list[str], existing: list[str]) -> bool:
+    return any(claim_paths_overlap(r, e) for r in requested for e in existing)
+
+
 def command_claim(args: argparse.Namespace) -> None:
     ensure_dirs()
     # Hold the lock across the conflict check AND the write so two concurrent
@@ -773,16 +837,24 @@ def command_claim(args: argparse.Namespace) -> None:
         if not task:
             emit({"ok": False, "error": "cannot claim files without active task"}, 1)
         owner = args.owner or task["owner"]
+        # Reject paths that normalize to nothing before they reach the state
+        # file — a stored empty path fails validation on every later read and
+        # bricks claim/status until the file is hand-edited.
+        invalid = [p for p in args.paths if not normalize_claim_path(p)]
+        if invalid:
+            emit({"ok": False, "error": "claim paths must be non-empty", "invalid_paths": invalid}, 1)
         payload = claims_payload()
         existing_claims = payload["claims"]
-        requested = set(args.paths)
+        requested = list(args.paths)
 
         conflicts: list[dict[str, Any]] = []
         for claim in existing_claims:
-            existing = set(claim.get("paths", []))
-            if claim.get("task_id") != task["id"] and requested.intersection(existing):
+            existing = claim.get("paths", [])
+            if not claims_overlap(requested, existing):
+                continue
+            if claim.get("task_id") != task["id"]:
                 conflicts.append(claim)
-            if claim.get("task_id") == task["id"] and claim.get("owner") != owner and requested.intersection(existing):
+            elif claim.get("owner") != owner:
                 conflicts.append(claim)
         if conflicts:
             emit({"ok": False, "error": "claim conflict", "conflicts": conflicts}, 1)
@@ -947,7 +1019,9 @@ def command_kanban_snapshot(_: argparse.Namespace) -> None:
             "active": bool(active),
             "columns": columns,
             "claims": claims_payload()["claims"],
-            "handoffs": read_handoffs(),
+            # handoffs.jsonl is append-only and unbounded; cap the snapshot so
+            # payload size doesn't grow forever (the UI shows the last 5).
+            "handoffs": read_handoffs()[-20:],
             "health": check_payload(),
         }
     )
