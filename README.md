@@ -74,12 +74,15 @@ agent-ops start "fix auth bug" --owner Codex # Lock a task
 agent-ops claim "src/auth/**"                # Claim files before editing
 agent-ops check                              # Verify protocol health
 agent-ops doctor                             # Diagnostics for bug reports
+agent-ops claim --release "src/auth/**"     # Crash recovery: drop stale claims
 agent-ops finish done --verification "..."   # Complete with evidence
+agent-ops hook install                       # Enforce claims at commit time
 agent-ops kanban --no-open                   # Open a command-backed board
 ```
 
 Human commands: `agent-ops help`, `agent-ops version`, `agent-ops tutorial`.
-Agents can also use the repo-local `./scripts/ao` wrapper after initialization.
+Agents can also use the repo-local `./scripts/ao` wrapper after initialization —
+or skip the shell entirely and connect over MCP (`agent-ops mcp`).
 
 ## What It Coordinates
 
@@ -214,24 +217,39 @@ agent-ops check
 
 ## Demo
 
+Two agents, one repo, no stepped-on toes — in five commands:
+
 ```bash
-# One command: install, pick agents, seed a tutorial task
 cd ~/my-project
-npx @hongphuc5497/agent-ops@latest init --interactive
-
-# Or do it step by step
 npx @hongphuc5497/agent-ops@latest init                              # install protocol files
-npx @hongphuc5497/agent-ops@latest install claude                    # teach Claude
-npx @hongphuc5497/agent-ops@latest install codex                     # teach Codex
-npx @hongphuc5497/agent-ops@latest tutorial                          # learn the loop
-
-# Start a real task — any agent now checks this first
-agent-ops start "add dark mode" --owner Claude
-agent-ops claim "src/theme/**"
-agent-ops delegate "review colors" --to OpenClaw
-agent-ops finish done --verification "npm test"
-
-# CI catches stale tasks daily, Telegram on failure
+agent-ops hook install                                               # claims now block conflicting commits
+claude mcp add agent-ops -- npx -y @hongphuc5497/agent-ops@latest mcp   # Claude gets native tools
+AGENT_OPS_OWNER=claude claude                                        # terminal 1: Claude, with identity
+AGENT_OPS_OWNER=codex codex                                          # terminal 2: Codex, with identity
 ```
+
+What happens next, with zero extra ceremony:
+
+```bash
+# Claude (via MCP tools, no shell needed):
+#   start "add dark mode" → claim "src/theme/*"
+
+# Codex tries to edit the same files:
+$ git commit -m "tweak theme"
+# ✗ blocked: src/theme/tokens.ts is claimed by claude
+#   (task: add dark mode — ask the owner, `claim --release` if stale,
+#    or AGENT_OPS_SKIP_HOOK=1 to bypass once)
+
+# Claude's session crashes mid-task? Recover in two commands:
+agent-ops doctor                              # → flags the orphaned claims
+agent-ops claim --release "src/theme/*"       # → Codex can proceed
+
+# Finish with evidence — the archive keeps the audit trail:
+agent-ops finish done --verification "npm test"
+```
+
+Prefer the guided path? `npx @hongphuc5497/agent-ops@latest init --interactive`
+picks your agents and seeds a tutorial task; `agent-ops kanban` shows the
+board. CI catches stale tasks daily, Telegram on failure.
 
 [Full Setup Guide](docs/SETUP.md) · [Plug-and-Play Guide](docs/plug-and-play.md) · [Supported Integrations](docs/supported-integrations.md) · [Case Study](docs/case-study.md)
