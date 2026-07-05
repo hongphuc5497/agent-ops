@@ -37,6 +37,33 @@ agent-ops kanban
 agent-ops install codex
 ```
 
+### Coordinate two agents (the whole point)
+
+```bash
+# In your repo, once:
+npx @hongphuc5497/agent-ops@latest init
+agent-ops hook install                 # blocks commits that touch another agent's claims
+
+# Wire each agent in natively over MCP (no CLI shelling needed):
+claude mcp add agent-ops -- npx -y @hongphuc5497/agent-ops@latest mcp
+# codex: add to ~/.codex/config.toml —
+#   [mcp_servers.agent-ops]
+#   command = "npx"
+#   args = ["-y", "@hongphuc5497/agent-ops@latest", "mcp", "--repo", "/abs/path/to/repo"]
+
+# Give each agent an identity (per-process, so a shared checkout stays safe):
+AGENT_OPS_OWNER=claude claude    # or: git config agent-ops.owner <name> as human fallback
+AGENT_OPS_OWNER=codex codex
+```
+
+From there both agents see the same `status`, claim files as native tools,
+and the pre-commit hook enforces claims instead of trusting etiquette.
+
+**Why not git worktrees?** Worktrees isolate agents by copying the checkout —
+you pay branch juggling, merge conflicts at the end, and lose the shared dev
+server. Agent Ops keeps one checkout with visible ownership and blocked
+conflicting commits. See `.ai/DECISIONS.md` for the full rationale.
+
 ## The Protocol
 
 Every agent reads the same repo-native state before editing:
@@ -111,6 +138,17 @@ Since 0.2.0, every state mutation is safe for concurrent agents:
 - **State locking** — `claim`, `start`, `finish`, `handoff`, `delegate` all
   hold an exclusive POSIX advisory lock. Two agents racing the same path
   produce exactly one winner; the other gets a structured `claim conflict`.
+  Where locking is unavailable (Windows), mutations are refused with a clear
+  error instead of silently racing — `AGENT_OPS_UNSAFE_NO_LOCK=1` overrides
+  for single-agent use; read-only commands always work.
+- **Crash recovery** — a crashed agent's claims are surfaced by
+  `agent-ops doctor` (stale + orphan detection) and dropped with
+  `agent-ops claim --release <paths>`; releasing another agent's claims
+  requires `--force --reason` and is audited to the handoff log.
+- **Enforcement** — `agent-ops hook install` adds a pre-commit hook that
+  blocks commits touching files claimed by a different agent, turning claims
+  from etiquette into a guarantee. Identity comes from `AGENT_OPS_OWNER`
+  (per-process) or `git config agent-ops.owner` (human fallback).
 - **Atomic writes** — `.ai/state/*.json` is written via temp file + `fsync`
   + `os.replace`. A crash mid-write cannot leave a half-written claim.
 - **Structural validation** — corrupt state files surface a typed `problems`
@@ -132,9 +170,9 @@ Slack via `SLACK_WEBHOOK_URL` (optional).
 ## What This Isn't
 
 - ❌ Not a hosted service or cloud dashboard
-- ❌ Not an MCP server (gated on real-world usage)
 - ❌ Not an agent framework or orchestration runtime
-- ❌ No package dependencies beyond Node, Python 3, and bash
+- ❌ No package dependencies beyond Node, Python 3, and bash — the MCP
+  server is hand-rolled stdio JSON-RPC, zero runtime deps
 
 ## Dogfooded On
 
@@ -172,7 +210,7 @@ agent-ops check
 6. ✓ Onboarding velocity — interactive init, tutorial, reads/writes matrix (v0.3.0)
 7. ✓ Smarter routing — per-repo `.ai/routing.json` overrides (v0.4.0) — see [docs/routing.md](docs/routing.md)
 8. ✓ Consolidated layout — `TASK.md` / `ROUTING.md` / `DECISIONS.md` and `integrations/` moved into `.ai/`; `agent-ops upgrade` auto-migrates (v0.5.0)
-9. ⏳ MCP server — make Agent Ops a first-class tool surface (v0.6.0, next)
+9. ✓ Adoption release — MCP server, pre-commit claim enforcement, crash recovery, honest cross-platform locking (v0.6.0)
 
 ## Demo
 

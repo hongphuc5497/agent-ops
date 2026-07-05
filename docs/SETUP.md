@@ -150,6 +150,28 @@ Use `upgrade` instead of `init --force`: `--force` regenerates `.ai/TASK.md` and
 `.ai/DECISIONS.md` from defaults, which would clobber your real decisions and active
 task.
 
+**Upgrading to v0.6.0:** 0.5.x repos keep working unchanged. v0.6.0 adds
+opt-in features you enable when ready:
+
+```bash
+agent-ops upgrade                    # refresh the vendored tooling first
+agent-ops hook install --dry-run     # preview the pre-commit claim enforcement
+agent-ops hook install               # enable it (uninstall any time)
+# wire agents in over MCP — see .ai/integrations/templates/mcp/README.md
+```
+
+Nothing is installed into `.git/hooks` or your agent configs unless you run
+those commands.
+
+## Agent Prompt Snippets
+
+`.ai/prompts/` holds short, copy-paste prompt fragments for each reference
+agent (`codex-owner.md`, `augment-discovery.md`, `openclaw-review.md`,
+`opencode-delegate.md`, `hermes-notification.md`). Use them when an agent has
+no persistent config file to install into — paste the snippet at the top of a
+session to teach it its role under the protocol. Agents with real config
+integration (`agent-ops install codex|claude|...`) don't need them.
+
 ## Optional Kanban Board
 
 ```bash

@@ -92,3 +92,36 @@ Rejected:
 
 Review trigger: revisit only if packaging creates repeated drift between the
 npm binary and repo-local `scripts/ao` behavior.
+
+## ADR-0006: Shared-checkout claims over git-worktree isolation
+
+Date: 2026-07-05
+Status: accepted
+
+Decision: Agent Ops coordinates agents inside ONE shared checkout using file
+claims, an enforcement pre-commit hook, and per-process identity
+(AGENT_OPS_OWNER) — rather than isolating each agent in its own git worktree.
+
+Reason: Worktrees dissolve file conflicts by copying the checkout, but the
+costs move downstream: branch-per-agent juggling, merge conflicts concentrated
+at integration time, duplicated dev servers/build caches, and no shared view
+of who owns what. Claims keep ownership visible in one place while the commit
+hook converts the protocol from etiquette into a guarantee. The two compose:
+teams that want worktrees can still run Agent Ops inside each worktree for
+routing, task state, and the audit log.
+
+Positioning vs platform-native multi-agent (Claude Code subagents, Codex
+sessions, Cursor): platforms coordinate their OWN agents. Agent Ops is the
+vendor-neutral layer for heterogeneous fleets — the protocol lives in the
+repo, not in any one vendor's runtime, and the MCP server (v0.6.0) plus
+integration templates are the adapter layer. If platforms absorb same-vendor
+coordination, the surviving value is cross-vendor routing, the portable
+audit trail, and human-readable state.
+
+Rejected:
+
+- Worktree-per-agent as the core model (isolation without coordination).
+- Betting the roadmap on any single platform's native orchestration.
+
+Review trigger: revisit if a platform ships cross-vendor coordination, or if
+real users report worktrees fully replacing their need for claims.

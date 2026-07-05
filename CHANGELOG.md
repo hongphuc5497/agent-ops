@@ -3,7 +3,52 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
-## Unreleased
+## 0.6.0 — 2026-07-06
+
+The adoption release: Agent Ops becomes the fastest vendor-neutral way to
+coordinate two AI coding agents in one repo — usable natively by agents that
+never shell out, with claims enforced instead of trusted.
+
+### Added
+
+- **MCP server** — `agent-ops mcp [--repo <path>]` speaks stdio JSON-RPC and
+  exposes `status`, `route`, `start`, `claim`, `release`, `handoff`, `finish`,
+  `check`, and `doctor` as native MCP tools. Hand-rolled (zero runtime
+  dependencies); every tool call runs the repo-vendored Python tool, so MCP
+  results are exactly the CLI's JSON. Version skew between the npm package and
+  the vendored tool surfaces in the `status` tool result. Setup for Claude
+  Code and Codex: `.ai/integrations/templates/mcp/README.md`.
+- **Pre-commit claim enforcement** — `agent-ops hook install` (with
+  `uninstall` and `--dry-run`) writes a pre-commit hook that blocks commits
+  touching files claimed by a different agent. The block message names the
+  files, the owning agent, and the three ways out. Agent identity resolves
+  from `AGENT_OPS_OWNER` (per-process) then `git config agent-ops.owner`
+  (human fallback). One-time bypass: `AGENT_OPS_SKIP_HOOK=1` (logged).
+  Refuses to clobber existing hooks (husky etc.) and works in worktrees.
+  Backend: new `claims-check --stdin [-z]` subcommand reusing the glob-aware
+  overlap logic — one Python spawn per commit regardless of size.
+- **Crash recovery** — `agent-ops claim --release <paths>` (and
+  `--release-all`) drops claims without finishing a task and works with no
+  active task, which is the recovery case. Releasing another owner's claims
+  requires `--force --reason` and appends an audit event to the handoff log.
+  Partial release of multi-path claims supported. `doctor` now reports stale
+  claims (older than `--staleness-hours`, default 24) and orphan claims
+  (task neither active nor archived); `check` warns on orphans without
+  failing.
+
+### Changed
+
+- **Locking is honest off-POSIX** — where `fcntl` is unavailable (Windows),
+  state mutations are refused with a structured error naming
+  `AGENT_OPS_UNSAFE_NO_LOCK=1` instead of silently running unlocked.
+  Read-only commands (`status`, `check`, `doctor`) keep working. There is no
+  Windows CI; this path is covered by an fcntl-import shim test.
+- README leads with the two-agent coordination quickstart, documents the
+  worktree tradeoff (new ADR-0006 in `.ai/DECISIONS.md`), and no longer says
+  "Not an MCP server".
+- `agent-ops help` lists the coordination environment variables.
+
+### Also in this release (PR #13)
 
 Claim conflicts are now glob-aware. Previously two agents could claim the same
 files under different spellings — `tests/*` and `tests/foo.test.js` did not
