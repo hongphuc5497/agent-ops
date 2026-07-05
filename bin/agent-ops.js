@@ -28,20 +28,28 @@ Usage:
   agent-ops route <description>
   agent-ops start <title> [options]
   agent-ops claim <paths...> [options]
+  agent-ops claim --release <paths...> [--force --reason <why>]   crash recovery
   agent-ops handoff [options]
   agent-ops delegate <description> [options]
   agent-ops finish done|parked|killed [options]
+  agent-ops hook install|uninstall [--dry-run]   pre-commit claim enforcement
+  agent-ops mcp [--repo <path>]                  MCP server over stdio
   agent-ops kanban [--port <port>] [--no-open]
   agent-ops check
-  agent-ops doctor
+  agent-ops doctor [--staleness-hours <n>]
   agent-ops version
   agent-ops help
+
+Environment:
+  AGENT_OPS_OWNER          this agent's identity (per-process; beats git config agent-ops.owner)
+  AGENT_OPS_SKIP_HOOK=1    bypass the pre-commit claim hook once (logged)
+  AGENT_OPS_UNSAFE_NO_LOCK=1  allow state mutations where file locking is unavailable
 
 Examples:
   npx agent-ops init --interactive
   npx agent-ops install codex
-  agent-ops tutorial
-  agent-ops kanban
+  agent-ops hook install
+  claude mcp add agent-ops -- npx -y @hongphuc5497/agent-ops@latest mcp
   agent-ops status
 `);
 }
@@ -367,8 +375,26 @@ switch (command) {
   case 'finish':
   case 'check':
   case 'doctor':
+  case 'claims-check':
+  case 'hook':
     runBash(requireInitializedRepo('ao'), [command, ...args]);
     break;
+  case 'install-hook':
+    // Guessability alias — users will try both shapes.
+    runBash(requireInitializedRepo('ao'), ['hook', 'install', ...args]);
+    break;
+  case 'mcp': {
+    // The server validates its target itself; --repo may point elsewhere.
+    if (!args.includes('--repo')) {
+      requireInitializedRepo('agent-ops-tool.py');
+    }
+    const server = path.join(packageRoot, 'bin', 'agent-ops-mcp.js');
+    if (!fs.existsSync(server)) {
+      fail(`agent-ops: missing server ${server}`);
+    }
+    run(process.execPath, [server, ...args]);
+    break;
+  }
   case 'kanban': {
     requireInitializedRepo('agent-ops-tool.py');
     const server = path.join(packageRoot, 'bin', 'kanban-server.js');
