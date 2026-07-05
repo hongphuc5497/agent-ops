@@ -25,6 +25,7 @@ const els = {
   error: document.querySelector('#error-region'),
   health: document.querySelector('#health-panel'),
   claims: document.querySelector('#claims-panel'),
+  handoffs: document.querySelector('#handoffs-panel'),
   form: document.querySelector('#task-form'),
   formError: document.querySelector('#form-error'),
   drawerTitle: document.querySelector('#drawer-title'),
@@ -63,7 +64,12 @@ function showError(target, payload) {
   const message = payload?.error || payload?.message || 'Command failed.';
   const command = payload?.command ? `<div><strong>Command:</strong> <code>${escapeHtml(payload.command)}</code></div>` : '';
   const stderr = payload?.stderr ? `<div><strong>stderr:</strong> <code>${escapeHtml(payload.stderr).slice(0, 600)}</code></div>` : '';
-  target.innerHTML = `<strong>${escapeHtml(message)}</strong>${command}${stderr}`;
+  const conflicts = Array.isArray(payload?.conflicts) && payload.conflicts.length
+    ? `<div class="conflict-detail"><strong>Conflicting claims:</strong>${payload.conflicts
+        .map((claim) => `<div>${escapeHtml(claim.owner || 'unknown owner')} holds <code>${(claim.paths || []).map(escapeHtml).join(', ')}</code></div>`)
+        .join('')}</div>`
+    : '';
+  target.innerHTML = `<strong>${escapeHtml(message)}</strong>${command}${conflicts}${stderr}`;
   target.hidden = false;
 }
 
@@ -132,6 +138,7 @@ function render() {
   renderBoard();
   renderHealth();
   renderClaims();
+  renderHandoffs();
   renderForm(selectedTask());
 }
 
@@ -243,13 +250,68 @@ function renderHealth() {
 function renderClaims() {
   const claims = state.snapshot.claims || [];
   if (!claims.length) {
-    els.claims.className = 'chip-list empty';
+    els.claims.className = 'claims-list empty';
     els.claims.textContent = 'No claims.';
     return;
   }
-  els.claims.className = 'chip-list';
+  els.claims.className = 'claims-list';
   els.claims.innerHTML = claims
-    .flatMap((claim) => (claim.paths || []).map((item) => `<span class="chip">${escapeHtml(item)}</span>`))
+    .map((claim) => {
+      const owner = claim.owner || 'unowned';
+      const chips = (claim.paths || [])
+        .map((item) => `<span class="chip">${escapeHtml(item)}</span>`)
+        .join('');
+      const taskTitle = taskTitleById(claim.task_id);
+      return `
+        <div class="claim-group" title="${escapeHtml(claim.reason || '')}">
+          <div class="claim-owner">
+            <span class="avatar">${escapeHtml(initials(owner))}</span>
+            <span class="claim-owner-name">${escapeHtml(owner)}</span>
+          </div>
+          <div class="chip-list">${chips}</div>
+          ${taskTitle ? `<p class="claim-task">${escapeHtml(taskTitle)}</p>` : ''}
+        </div>
+      `;
+    })
+    .join('');
+}
+
+function taskTitleById(taskId) {
+  if (!taskId) {
+    return '';
+  }
+  const task = allTasks().find((item) => item.id === taskId);
+  return task ? task.title || task.id : taskId;
+}
+
+function shortTime(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value || '');
+  return match ? `${match[2]}/${match[3]} ${match[4]}:${match[5]}` : '';
+}
+
+function renderHandoffs() {
+  const handoffs = (state.snapshot.handoffs || []).filter(
+    (event) => event && typeof event === 'object',
+  );
+  if (!handoffs.length) {
+    els.handoffs.className = 'handoffs-list empty';
+    els.handoffs.textContent = 'No handoffs.';
+    return;
+  }
+  els.handoffs.className = 'handoffs-list';
+  els.handoffs.innerHTML = handoffs
+    .slice(-5)
+    .reverse()
+    .map((event) => {
+      const stamp = shortTime(event.created_at);
+      const detail = event.description || event.acceptance || event.notes || '';
+      return `
+        <div class="handoff-row" title="${escapeHtml(detail)}">
+          <span class="handoff-agents">${escapeHtml(event.from || '?')} <span class="handoff-arrow">&rarr;</span> ${escapeHtml(event.to || '?')}</span>
+          ${stamp ? `<span class="handoff-time">${escapeHtml(stamp)}</span>` : ''}
+        </div>
+      `;
+    })
     .join('');
 }
 
