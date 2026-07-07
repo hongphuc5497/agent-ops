@@ -3,6 +3,18 @@
 All notable changes to Agent Ops are documented here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## Unreleased
+
+The kanban board now speaks the Astryx design language. The stylesheet's
+token layer was replaced with values adapted from Meta's Astryx design system
+(`@astryxdesign/theme-neutral`): a neutral near-black / near-white accent,
+Astryx color families for the five board columns, Figtree typography, and
+Astryx radii, shadows, and motion durations. Light and dark themes now
+resolve from a single token set via CSS `light-dark()`, keyed off the
+`color-scheme` value the existing theme toggle already flips — no JavaScript
+changes. Figtree ships self-hosted alongside the board (SIL OFL), so the page
+makes no external requests and works fully offline.
+
 ## 0.6.0 — 2026-07-06
 
 The adoption release: Agent Ops becomes the fastest vendor-neutral way to
